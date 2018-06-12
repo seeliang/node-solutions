@@ -1,0 +1,19 @@
+{
+  "name": "graphql-express",
+  "version": "0.1.0",
+  "description": "play graphql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seeliang/graphql-express.git"
+  },
+  "author": "sihui liang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seeliang/graphql-express/issues"
+  },
+  "homepage": "https://github.com/seeliang/graphql-express#readme"
+}
