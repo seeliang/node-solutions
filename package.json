@@ -4,6 +4,7 @@
   "description": "play graphql",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/seeliang/graphql-express/issues"
   },
-  "homepage": "https://github.com/seeliang/graphql-express#readme"
+  "homepage": "https://github.com/seeliang/graphql-express#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "express-graphql": "^0.6.12",
+    "graphql": "^0.13.2"
+  }
 }
