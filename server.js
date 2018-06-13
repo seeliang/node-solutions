@@ -5,27 +5,35 @@ var { buildSchema } = require('graphql');
 var schema = buildSchema(`
   type Query {
     hi: String,
-    games: [Game]
+    games: [Game],
+    publishers: [Publisher]
   }
 
   type Game {
     id: ID,
     title: String,
-    publisher: String
+    publisherId: Int
   }
   
+  type Publisher {
+    id: ID,
+    title: String
+  }
 `);
 
 
 var root = {
   hi: () => 'Just to say hi, you made it',
   games: () => [
-    {id:1, title: 'metal gear solid', publisher: 'konami'},
-    {id:2, title: 'god of war', publisher: 'santa monica'},
-    {id:3, title: 'winning eleven', publisher: 'konami'}
-  ]
+    {id:1, title: 'metal gear solid', publisherId: 1},
+    {id:2, title: 'god of war', publisherId: 2},
+    {id:3, title: 'winning eleven', publisherId: 1}
+  ],
 
-  
+  publishers: () => [
+    {id: 1, title: 'konami'},
+    {id: 2, title: 'santa monica'}
+  ]
 };
 
 var app = express();
