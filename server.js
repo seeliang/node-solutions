@@ -5,41 +5,60 @@ var { buildSchema } = require('graphql');
 var schema = buildSchema(`
   type Query {
     hi: String,
-    games: [Game],
-    publishers: [Publisher]
+    games(id: Int, publisherId: Int): [Games],
+    publishers(id: Int): [Publishers]
   }
 
-  type Game {
-    id: ID,
+  type Games {
+    id: Int,
     title: String,
     publisherId: Int
   }
   
-  type Publisher {
-    id: ID,
+  type Publishers {
+    id: Int,
     title: String
   }
 `);
 
+const Games = [
+  {id:1, title: 'metal gear solid', publisherId: 1},
+  {id:2, title: 'god of war', publisherId: 2},
+  {id:3, title: 'winning eleven', publisherId: 1}
+];
 
-var root = {
-  hi: () => 'Just to say hi, you made it',
-  games: () => [
-    {id:1, title: 'metal gear solid', publisherId: 1},
-    {id:2, title: 'god of war', publisherId: 2},
-    {id:3, title: 'winning eleven', publisherId: 1}
-  ],
+const Publishers =[
+  {id: 1, title: 'konami'},
+  {id: 2, title: 'santa monica'}
+]
 
-  publishers: () => [
-    {id: 1, title: 'konami'},
-    {id: 2, title: 'santa monica'}
-  ]
-};
+const resolverMap = {
+  games: (args) => {
+    if (args.id) {
+      const game = Games.find(game => game.id === args.id)
+      return [game]
+    }
+    if (args.publisherId) {
+      const games = Games.filter(
+        game => game.publisherId === args.publisherId
+      )
+      return games
+    }
+    return Games;
+  },
+  publishers: (args) => {
+    if (args.id) {
+      const publisher = Publishers.find(publisher => publisher.id === args.id)
+      return [publisher]
+    }
+    return Publishers;
+  }
+}
 
 var app = express();
 app.use('/graphql', graphqlHTTP({
   schema: schema,
-  rootValue: root,
+  rootValue: resolverMap,
   graphiql: true,
 }));
 app.listen(4000);
