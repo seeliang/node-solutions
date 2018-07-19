@@ -39,10 +39,9 @@ const resolverMap = {
       return [game]
     }
     if (args.publisherId) {
-      const games = Games.filter(
+      return Games.filter(
         game => game.publisherId === args.publisherId
       )
-      return games
     }
     return Games;
   },
