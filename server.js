@@ -5,14 +5,14 @@ var { buildSchema } = require('graphql');
 var schema = buildSchema(`
   type Query {
     hi: String,
-    games(id: Int, publisherId: Int): [Games],
-    publishers(id: Int): [Publishers]
+    games(id: Int, publisherId: Int): Games,
+    publishers(id: Int): Publishers
   }
 
   type Games {
     id: Int,
     title: String,
-    publisherId: Int
+    publisher: Publishers
   }
   
   type Publishers {
@@ -20,6 +20,8 @@ var schema = buildSchema(`
     title: String
   }
 `);
+
+//data
 
 const Games = [
   {id:1, title: 'metal gear solid', publisherId: 1},
@@ -32,26 +34,33 @@ const Publishers =[
   {id: 2, title: 'santa monica'}
 ]
 
-const resolverMap = {
-  games: (args) => {
-    if (args.id) {
-      const game = Games.find(game => game.id === args.id)
-      return [game]
-    }
-    if (args.publisherId) {
-      return Games.filter(
-        game => game.publisherId === args.publisherId
-      )
-    }
-    return Games;
-  },
-  publishers: (args) => {
-    if (args.id) {
-      const publisher = Publishers.find(publisher => publisher.id === args.id)
-      return [publisher]
-    }
-    return Publishers;
+// resolver
+const publishersResolver = (args) => {
+  if (args.id) {
+    const publisher = Publishers.find(publisher => publisher.id === args.id)
+    return [publisher]
   }
+  return Publishers;
+}
+
+const gamesResolver = (args) => {
+  if (args.id) {
+    const game = Games.find(game => { 
+      if (game.id === args.id) {
+        const publisher = publishersResolver({id: game.publisherId}, Publishers);
+        const joined = Object.assign(game, {publisher: publisher[0]});
+        return joined
+      }
+    })
+    return [game]
+  }
+  return Games;
+}
+
+// resolver map
+const resolverMap = {
+  games: gamesResolver,
+  publishers: publishersResolver
 }
 
 var app = express();
