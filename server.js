@@ -5,8 +5,8 @@ var { buildSchema } = require('graphql');
 var schema = buildSchema(`
   type Query {
     hi: String,
-    games(id: Int, publisherId: Int): Games,
-    publishers(id: Int): Publishers
+    games(id: Int, publisherId: Int): [Games],
+    publishers(id: Int): [Publishers]
   }
 
   type Games {
