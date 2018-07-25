@@ -35,7 +35,7 @@ const Publishers =[
 ]
 
 // resolver
-const publishersResolver = (args) => {
+const publishersResolver = (Publishers) => (args) => {
   if (args.id) {
     const publisher = Publishers.find(publisher => publisher.id === args.id)
     return [publisher]
@@ -64,7 +64,7 @@ const gamesResolver = (args) => {
 // resolver map
 const resolverMap = {
   games: gamesResolver,
-  publishers: publishersResolver
+  publishers: publishersResolver(Publishers)
 }
 
 var app = express();
