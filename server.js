@@ -49,13 +49,16 @@ const joinPublisher = ({game, Publishers, publishersResolver}) => {
   return Object.assign(game, {publisher: publisher[0]});
 }
 
-const gamesResolver =({Games, Publishers, publishersResolver,joinPublisher}) => (args) => {
+const gamesResolver =({Games, Publishers, publishersResolver, joinPublisher}) => (args) => {
   if (args.id) {
     const game = Games.find(game => { 
       if (game.id === args.id) {
         return joinPublisher({game, Publishers, publishersResolver})
       }
     })
+    if (typeof game !== 'object') {
+      return new Response ("NotFound",'could not find game with this id');
+    }
     return [game]
   }
   return Games;
