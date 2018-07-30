@@ -50,7 +50,7 @@ const joinPublisher = ({games, Publishers, publishersResolver}) =>  (
   })
 )
 
-const gamesResolver =({Games, Publishers, publishersResolver, joinPublisher, shallJoin}) => ({id, publisherId}) => {
+const gamesResolver =({Games,Publishers, publishersResolver, joinPublisher}) => ({id, publisherId}) => {
   let data = [];
   if(typeof id === 'undefined' && typeof publisherId === 'undefined') {
     return joinPublisher({games: Games, Publishers, publishersResolver});
@@ -66,13 +66,10 @@ const gamesResolver =({Games, Publishers, publishersResolver, joinPublisher, sha
     throw new Error ('could not find game');
   }
   
-  if ( shallJoin !== false) {
+  if (Publishers && publishersResolver && joinPublisher) {
     return joinPublisher({games: data, Publishers, publishersResolver});
   }
 
-  
-
- 
 }
 
 // resolver map
