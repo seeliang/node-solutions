@@ -63,7 +63,7 @@ const gamesResolver =({Games, Publishers, publishersResolver, joinPublisher, sha
     data = Games.filter(game => game.publisherId === publisherId)
   }
   if (data.length === 0) {
-    return new Response ("NotFound",'could not find game');
+    throw new Error ('could not find game');
   }
   
   if ( shallJoin !== false) {
