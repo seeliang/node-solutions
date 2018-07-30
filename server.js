@@ -43,24 +43,36 @@ const publishersResolver = (Publishers) => (args) => {
   return Publishers;
 }
 
-const joinPublisher = ({game, Publishers, publishersResolver}) => {
-  const {publisherId} = game;
-  const publisher = publishersResolver(Publishers)({id: publisherId})
+const joinPublisher = ({games, Publishers, publishersResolver}) =>  (
+  games.map(game =>{
+  const publisher = publishersResolver(Publishers)({id: game.publisherId})
   return Object.assign(game, {publisher: publisher[0]});
-}
+  })
+)
 
-const gamesResolver =({Games, Publishers, publishersResolver, joinPublisher, shallJoin}) => (args) => {
-  if (args.id) {
-    let game = Games.find(game => game.id === args.id);
-    if (shallJoin !== false) {
-      game = joinPublisher({game, Publishers, publishersResolver});
-    }
-    if (typeof game !== 'object') {
-      return new Response ("NotFound",'could not find game with this id');
-    }
-    return [game]
+const gamesResolver =({Games, Publishers, publishersResolver, joinPublisher, shallJoin}) => ({id, publisherId}) => {
+  let data = [];
+  if(typeof id === 'undefined' && typeof publisherId === 'undefined') {
+    return joinPublisher({games: Games, Publishers, publishersResolver});
   }
-  return Games;
+  if (id) {
+    let game = Games.find(game => game.id === id);
+    data = typeof game === 'object' ? [...data, game] : data;
+  }
+  if(publisherId) {
+    data = Games.filter(game => game.publisherId === publisherId)
+  }
+  if (data.length === 0) {
+    return new Response ("NotFound",'could not find game');
+  }
+  
+  if ( shallJoin !== false) {
+    return joinPublisher({games: data, Publishers, publishersResolver});
+  }
+
+  
+
+ 
 }
 
 // resolver map
