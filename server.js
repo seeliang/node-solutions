@@ -35,9 +35,9 @@ const Publishers =[
 ]
 
 // resolver
-const publishersResolver = (Publishers) => (args) => {
-  if (args.id) {
-    const publisher = Publishers.find(publisher => publisher.id === args.id)
+const publishersResolver = ({Publishers}) => ({id}) => {
+  if (id) {
+    const publisher = Publishers.find(publisher => publisher.id === id)
     return [publisher]
   }
   return Publishers;
@@ -45,7 +45,7 @@ const publishersResolver = (Publishers) => (args) => {
 
 const joinPublisher = ({games, Publishers, publishersResolver}) =>  (
   games.map(game =>{
-  const publisher = publishersResolver(Publishers)({id: game.publisherId})
+  const publisher = publishersResolver({Publishers})({id: game.publisherId})
   return Object.assign(game, {publisher: publisher[0]});
   })
 )
@@ -75,7 +75,7 @@ const gamesResolver =({Games,Publishers, publishersResolver, joinPublisher}) => 
 // resolver map
 const resolverMap = {
   games: gamesResolver({Games,Publishers, publishersResolver, joinPublisher}),
-  publishers: publishersResolver(Publishers)
+  publishers: publishersResolver({Publishers})
 }
 
 var app = express();
