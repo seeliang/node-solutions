@@ -1,0 +1,23 @@
+{
+  "name": "node-express",
+  "version": "1.0.0",
+  "description": "basic node express setup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seeliang/node-express.git"
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "sihuiliang hi@sihuiliang.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seeliang/node-express/issues"
+  },
+  "homepage": "https://github.com/seeliang/node-express#readme"
+}
