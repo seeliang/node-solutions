@@ -17,7 +17,8 @@ var schema = buildSchema(`
   
   type Publishers {
     id: Int,
-    title: String
+    title: String,
+    games: [Games]
   }
 `);
 
@@ -35,7 +36,19 @@ const Publishers =[
 ]
 
 // resolver
-const publishersResolver = ({Publishers}) => ({id}) => {
+const joinGame = ({publishers, Games, gamesResolver}) => {
+  const content = publishers.map(publisher =>{
+    const games = gamesResolver({Games})({publisherId: publisher.id})
+    return {...publisher, games};
+  });
+  console.log(JSON.stringify(content));
+  return content;
+}
+
+const publishersResolver = ({Publishers, Games, gamesResolver, joinGame}) => ({id}) => {
+  if(typeof id === 'undefined') {
+    return joinGame({publishers: Publishers, Games, gamesResolver});
+  }
   if (id) {
     const publisher = Publishers.find(publisher => publisher.id === id)
     return [publisher]
@@ -65,17 +78,19 @@ const gamesResolver =({Games,Publishers, publishersResolver, joinPublisher}) => 
   if (data.length === 0) {
     throw new Error ('could not find game');
   }
-  
+
   if (Publishers && publishersResolver && joinPublisher) {
     return joinPublisher({games: data, Publishers, publishersResolver});
   }
+
+  return data;
 
 }
 
 // resolver map
 const resolverMap = {
   games: gamesResolver({Games,Publishers, publishersResolver, joinPublisher}),
-  publishers: publishersResolver({Publishers})
+  publishers: publishersResolver({Publishers, Games, gamesResolver, joinGame})
 }
 
 var app = express();
