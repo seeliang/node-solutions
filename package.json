@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/seeliang/node-express/issues"
   },
-  "homepage": "https://github.com/seeliang/node-express#readme"
+  "homepage": "https://github.com/seeliang/node-express#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
