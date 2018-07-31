@@ -41,19 +41,27 @@ const joinGame = ({publishers, Games, gamesResolver}) => {
     const games = gamesResolver({Games})({publisherId: publisher.id})
     return {...publisher, games};
   });
-  console.log(JSON.stringify(content));
   return content;
 }
 
 const publishersResolver = ({Publishers, Games, gamesResolver, joinGame}) => ({id}) => {
+  let data = [];
   if(typeof id === 'undefined') {
     return joinGame({publishers: Publishers, Games, gamesResolver});
   }
   if (id) {
     const publisher = Publishers.find(publisher => publisher.id === id)
-    return [publisher]
+    data = typeof publisher === 'object' ? [...data, publisher] : data;
   }
-  return Publishers;
+  if (data.length === 0) {
+    throw new Error ('could not find publisher');
+  }
+
+  if (gamesResolver && Games && joinGame) {
+    return joinGame({publishers: data, Games, gamesResolver});
+  }
+
+  return data;
 }
 
 const joinPublisher = ({games, Publishers, publishersResolver}) =>  (
