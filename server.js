@@ -1,8 +1,10 @@
-var express = require('express');
-var graphqlHTTP = require('express-graphql');
-var { buildSchema } = require('graphql');
+const express = require('express');
+const graphqlHTTP = require('express-graphql');
+const { buildSchema } = require('graphql');
 
-var schema = buildSchema(`
+const {gamesResolver,publishersResolver,joinGame,joinPublisher} = require('./resolvers');
+
+const schema = buildSchema(`
   type Query {
     hi: String,
     games(id: Int, publisherId: Int): [Games],
@@ -35,73 +37,13 @@ const Publishers =[
   {id: 2, title: 'santa monica'}
 ]
 
-// resolver
-const joinGame = ({publishers, Games, gamesResolver}) => {
-  const content = publishers.map(publisher =>{
-    const games = gamesResolver({Games})({publisherId: publisher.id})
-    return {...publisher, games};
-  });
-  return content;
-}
-
-const publishersResolver = ({Publishers, Games, gamesResolver, joinGame}) => ({id}) => {
-  let data = [];
-  if(typeof id === 'undefined') {
-    return joinGame({publishers: Publishers, Games, gamesResolver});
-  }
-  if (id) {
-    const publisher = Publishers.find(publisher => publisher.id === id)
-    data = typeof publisher === 'object' ? [...data, publisher] : data;
-  }
-  if (data.length === 0) {
-    throw new Error ('could not find publisher');
-  }
-
-  if (gamesResolver && Games && joinGame) {
-    return joinGame({publishers: data, Games, gamesResolver});
-  }
-
-  return data;
-}
-
-const joinPublisher = ({games, Publishers, publishersResolver}) =>  (
-  games.map(game =>{
-  const publisher = publishersResolver({Publishers})({id: game.publisherId})
-  return Object.assign(game, {publisher: publisher[0]});
-  })
-)
-
-const gamesResolver =({Games,Publishers, publishersResolver, joinPublisher}) => ({id, publisherId}) => {
-  let data = [];
-  if(typeof id === 'undefined' && typeof publisherId === 'undefined') {
-    return joinPublisher({games: Games, Publishers, publishersResolver});
-  }
-  if (id) {
-    let game = Games.find(game => game.id === id);
-    data = typeof game === 'object' ? [...data, game] : data;
-  }
-  if(publisherId) {
-    data = Games.filter(game => game.publisherId === publisherId)
-  }
-  if (data.length === 0) {
-    throw new Error ('could not find game');
-  }
-
-  if (Publishers && publishersResolver && joinPublisher) {
-    return joinPublisher({games: data, Publishers, publishersResolver});
-  }
-
-  return data;
-
-}
-
 // resolver map
 const resolverMap = {
   games: gamesResolver({Games,Publishers, publishersResolver, joinPublisher}),
   publishers: publishersResolver({Publishers, Games, gamesResolver, joinGame})
 }
 
-var app = express();
+const app = express();
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: resolverMap,
