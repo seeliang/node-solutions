@@ -23,7 +23,7 @@ const publishersResolver = ({
   }
   if (id) {
     const result = Publishers.find(publisher => publisher.id === id);
-    data = typeof publisher === 'object' ? [...data, result] : data;
+    data = typeof result === 'object' ? [...data, result] : data;
   }
   if (data.length === 0) {
     throw new Error('could not find publisher');
@@ -45,7 +45,7 @@ const gamesResolver = ({
   }
   if (id) {
     const result = Games.find(game => game.id === id);
-    data = typeof game === 'object' ? [...data, result] : data;
+    data = typeof result === 'object' ? [...data, result] : data;
   }
   if (publisherId) {
     data = Games.filter(game => game.publisherId === publisherId);
