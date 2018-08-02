@@ -5,7 +5,7 @@ const {expect} = require('chai');
 const games = [{ id: 1, title: 'MGS', publisherId: 3}],
   publishers = [{id: 3, title: 'konami'}];
 
-describe('joinResolvers', () => {
+describe('the join resolvers', () => {
 
   describe('joinGames', () => {
     it('should join games to publisher', () => {

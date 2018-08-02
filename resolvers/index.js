@@ -1,11 +1,11 @@
 // resolver
-const joinGame = ({publishers, Games, gamesResolver}) => {
-  const content = publishers.map(publisher =>{
+
+const joinGame = ({publishers, Games, gamesResolver}) => (
+  publishers.map(publisher =>{
     const games = gamesResolver({Games})({publisherId: publisher.id})
     return {...publisher, games};
-  });
-  return content;
-}
+  })
+)
 
 const publishersResolver = ({Publishers, Games, gamesResolver, joinGame}) => ({id}) => {
   let data = [];
