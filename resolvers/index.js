@@ -15,7 +15,7 @@ const joinPublisher = ({ games, Publishers, publishersResolver }) => (
 );
 
 const publishersResolver = ({
-  Publishers, Games, gamesResolver, joinGame,
+  Publishers, Games, gamesResolver, joinGame, // eslint-disable-line no-shadow
 }) => ({ id }) => {
   let data = [];
   if (typeof id === 'undefined') {
@@ -37,7 +37,7 @@ const publishersResolver = ({
 };
 
 const gamesResolver = ({
-  Games, Publishers, publishersResolver, joinPublisher,
+  Games, Publishers, publishersResolver, joinPublisher, // eslint-disable-line no-shadow
 }) => ({ id, publisherId }) => {
   let data = [];
   if (typeof id === 'undefined' && typeof publisherId === 'undefined') {

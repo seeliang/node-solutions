@@ -4,5 +4,9 @@
     "browser": false,
     "es6": true
   },
-  "extends": "airbnb"
+  "extends": "airbnb",
+  "globals": {
+    "describe": true,
+    "it": false
+  }
 }
