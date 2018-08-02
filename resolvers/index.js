@@ -29,8 +29,8 @@ const publishersResolver = ({Publishers, Games, gamesResolver, joinGame}) => ({i
 
 const joinPublisher = ({games, Publishers, publishersResolver}) =>  (
   games.map(game =>{
-  const publisher = publishersResolver({Publishers})({id: game.publisherId})
-  return Object.assign(game, {publisher: publisher[0]});
+    const publisher = publishersResolver({Publishers})({id: game.publisherId})
+    return {...game, publisher};
   })
 )
 

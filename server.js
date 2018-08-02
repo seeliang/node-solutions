@@ -14,7 +14,7 @@ const schema = buildSchema(`
   type Games {
     id: Int,
     title: String,
-    publisher: Publishers
+    publisher: [Publishers]
   }
   
   type Publishers {
