@@ -20,7 +20,7 @@ const Publishers = [
 
 
 describe('the join resolvers', () => {
-  describe('joinGames', () => {
+  describe('joinGame', () => {
     it('should join games to publisher', () => {
       const result = joinGame({
         publishers: onePublisher,
@@ -82,7 +82,7 @@ describe('the join resolvers', () => {
       }]);
     });
 
-    it('with correct id, it should join games to publisher', () => {
+    it('with correct id, it should join games to publishers', () => {
       const result = publishersResolver({
         Publishers,
         Games,
@@ -129,7 +129,7 @@ describe('the join resolvers', () => {
       );
     });
 
-    it('with correct id, it should join games to publisher', () => {
+    it('with correct id, it should join publishers to games', () => {
       const result = gamesResolver({
         Publishers,
         Games,
