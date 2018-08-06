@@ -59,7 +59,7 @@ describe('the join resolvers', () => {
     });
   });
 
-  describe('publisherResolver', () => {
+  describe('publishersResolver', () => {
     it('by default it should join games to publisher', () => {
       const result = publishersResolver({
         Publishers,
@@ -98,13 +98,53 @@ describe('the join resolvers', () => {
     });
 
     it.skip('with wrong id, it should notify', () => {
-      const result = publishersResolver({
+      // const result = publishersResolver({
+      //   Publishers,
+      //   Games,
+      //   gamesResolver,
+      //   joinGame,
+      // })({ id: '4' });
+      // chai https://stackoverflow.com/questions/14966821/testing-for-errors-thrown-in-mocha
+    });
+  });
+
+
+  describe('gamesResolver', () => {
+    it('by default it should join publisher to games', () => {
+      const result = gamesResolver({
         Publishers,
         Games,
-        gamesResolver,
-        joinGame,
-      })({ id: '4' });
-      // chai https://stackoverflow.com/questions/14966821/testing-for-errors-thrown-in-mocha
+        publishersResolver,
+        joinPublisher,
+      })({});
+
+      expect(result).to.deep.equal(
+        [{
+          id: '1', title: 'metal gear solid', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
+        }, {
+          id: '2', title: 'god of war', publisherId: '2', publisher: [{ id: '2', title: 'santa monica' }],
+        }, {
+          id: '3', title: 'winning eleven', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
+        }],
+      );
+    });
+
+    it('with correct id, it should join games to publisher', () => {
+      const result = gamesResolver({
+        Publishers,
+        Games,
+        publishersResolver,
+        joinPublisher,
+      })({ id: '1' });
+
+      expect(result).to.deep.equal(
+        [{
+          id: '1', title: 'metal gear solid', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
+        }],
+      );
+    });
+
+    it.skip('with wrong id, it should notify', () => {
     });
   });
 });
