@@ -25,9 +25,6 @@ const publishersResolver = ({
     const result = Publishers.find(publisher => publisher.id === id);
     data = typeof result === 'object' ? [...data, result] : data;
   }
-  if (data.length === 0) {
-    throw new Error('could not find publisher');
-  }
 
   if (gamesResolver && Games && joinGame) {
     return joinGame({ publishers: data, Games, gamesResolver });
@@ -49,9 +46,6 @@ const gamesResolver = ({
   }
   if (publisherId) {
     data = Games.filter(game => game.publisherId === publisherId);
-  }
-  if (data.length === 0) {
-    throw new Error('could not find game');
   }
 
   if (Publishers && publishersResolver && joinPublisher) {
