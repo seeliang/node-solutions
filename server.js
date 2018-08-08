@@ -4,7 +4,7 @@ const { buildSchema } = require('graphql');
 const { Games, Publishers } = require('./data');
 
 const {
-  gamesResolver, publishersResolver, joinGame, joinPublisher,
+  resolver, join,
 } = require('./resolvers');
 
 const cacheGames = Games;
@@ -51,11 +51,11 @@ const addPublisher = ({ Publishers }) => ({ input }) => { // eslint-disable-line
 
 // mapping
 const apiMap = {
-  games: gamesResolver({
-    Games: cacheGames, Publishers: cachePublishers, publishersResolver, joinPublisher,
+  games: resolver.games({
+    Games: cacheGames, Publishers: cachePublishers, resolver, join,
   }),
-  publishers: publishersResolver({
-    Publishers: cachePublishers, Games: cacheGames, gamesResolver, joinGame,
+  publishers: resolver.publishers({
+    Publishers: cachePublishers, Games: cacheGames, resolver, join,
   }),
   addPublisher: addPublisher({ Publishers: cachePublishers }),
 };

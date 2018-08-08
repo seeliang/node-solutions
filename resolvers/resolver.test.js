@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const {
-  gamesResolver, publishersResolver, join,
+  resolver, join,
 } = require('./index');
 
 const oneGame = [{ id: '1', title: 'MGS', publisherId: '3' }];
@@ -25,7 +25,7 @@ describe('the join resolvers', () => {
       const result = join.game({
         publishers: onePublisher,
         Games: oneGame,
-        gamesResolver,
+        resolver,
       });
       expect(result).to.deep.equal([{
         id: '3',
@@ -44,7 +44,7 @@ describe('the join resolvers', () => {
       const result = join.publisher({
         games: oneGame,
         Publishers: onePublisher,
-        publishersResolver,
+        resolver,
       });
       expect(result).to.deep.equal(
         [
@@ -61,10 +61,10 @@ describe('the join resolvers', () => {
 
   describe('publishersResolver', () => {
     it('by default it should join games to publisher', () => {
-      const result = publishersResolver({
+      const result = resolver.publishers({
         Publishers,
         Games,
-        gamesResolver,
+        resolver,
         join,
       })({});
 
@@ -83,10 +83,10 @@ describe('the join resolvers', () => {
     });
 
     it('with correct id, it should join games to publishers', () => {
-      const result = publishersResolver({
+      const result = resolver.publishers({
         Publishers,
         Games,
-        gamesResolver,
+        resolver,
         join,
       })({ id: '1' });
       expect(result).to.deep.equal([{
@@ -111,10 +111,10 @@ describe('the join resolvers', () => {
 
   describe('gamesResolver', () => {
     it('by default it should join publisher to games', () => {
-      const result = gamesResolver({
+      const result = resolver.games({
         Publishers,
         Games,
-        publishersResolver,
+        resolver,
         join,
       })({});
 
@@ -130,10 +130,10 @@ describe('the join resolvers', () => {
     });
 
     it('with correct id, it should join publishers to games', () => {
-      const result = gamesResolver({
+      const result = resolver.games({
         Publishers,
         Games,
-        publishersResolver,
+        resolver,
         join,
       })({ id: '1' });
 
