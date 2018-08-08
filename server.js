@@ -7,6 +7,9 @@ const {
   gamesResolver, publishersResolver, joinGame, joinPublisher,
 } = require('./resolvers');
 
+const cacheGames = Games;
+let cachePublishers = Publishers;
+
 const schema = buildSchema(`
 
   type Query {
@@ -26,23 +29,41 @@ const schema = buildSchema(`
     title: String,
     games: [Games]
   }
+
+  input PublisherInput{
+    title: String
+  }
+
+  type Mutation {
+    addPublisher(input: PublisherInput): Publishers
+  }
 `);
 
+// Mutation
 
-// resolver map
-const resolverMap = {
+const addPublisher = ({ Publishers }) => ({ input }) => { // eslint-disable-line no-shadow
+  const { title } = input;
+  const id = (Publishers.length + 1);
+  const newPublisher = { id, title };
+  cachePublishers = [...Publishers, newPublisher];
+  return { id, title };
+};
+
+// mapping
+const apiMap = {
   games: gamesResolver({
-    Games, Publishers, publishersResolver, joinPublisher,
+    Games: cacheGames, Publishers: cachePublishers, publishersResolver, joinPublisher,
   }),
   publishers: publishersResolver({
-    Publishers, Games, gamesResolver, joinGame,
+    Publishers: cachePublishers, Games: cacheGames, gamesResolver, joinGame,
   }),
+  addPublisher: addPublisher({ Publishers: cachePublishers }),
 };
 
 const app = express();
 app.use('/graphql', graphqlHTTP({
   schema,
-  rootValue: resolverMap,
+  rootValue: apiMap,
   graphiql: true,
 }));
 app.listen(4000);
