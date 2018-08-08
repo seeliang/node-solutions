@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const {
-  gamesResolver, publishersResolver, joinGame, joinPublisher,
+  gamesResolver, publishersResolver, join,
 } = require('./index');
 
 const oneGame = [{ id: '1', title: 'MGS', publisherId: '3' }];
@@ -20,9 +20,9 @@ const Publishers = [
 
 
 describe('the join resolvers', () => {
-  describe('joinGame', () => {
-    it('should join games to publisher', () => {
-      const result = joinGame({
+  describe('join game', () => {
+    it('should join games to publishers', () => {
+      const result = join.game({
         publishers: onePublisher,
         Games: oneGame,
         gamesResolver,
@@ -39,9 +39,9 @@ describe('the join resolvers', () => {
     });
   });
 
-  describe('joinPublisher', () => {
-    it('should join publisher to games', () => {
-      const result = joinPublisher({
+  describe('join publisher', () => {
+    it('should join publishers to games', () => {
+      const result = join.publisher({
         games: oneGame,
         Publishers: onePublisher,
         publishersResolver,
@@ -65,7 +65,7 @@ describe('the join resolvers', () => {
         Publishers,
         Games,
         gamesResolver,
-        joinGame,
+        join,
       })({});
 
       expect(result).to.deep.equal([{
@@ -87,7 +87,7 @@ describe('the join resolvers', () => {
         Publishers,
         Games,
         gamesResolver,
-        joinGame,
+        join,
       })({ id: '1' });
       expect(result).to.deep.equal([{
         id: '1',
@@ -115,7 +115,7 @@ describe('the join resolvers', () => {
         Publishers,
         Games,
         publishersResolver,
-        joinPublisher,
+        join,
       })({});
 
       expect(result).to.deep.equal(
@@ -134,7 +134,7 @@ describe('the join resolvers', () => {
         Publishers,
         Games,
         publishersResolver,
-        joinPublisher,
+        join,
       })({ id: '1' });
 
       expect(result).to.deep.equal(
