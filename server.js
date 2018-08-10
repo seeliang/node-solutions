@@ -7,8 +7,10 @@ const {
   resolver, join,
 } = require('./resolvers');
 
-const cacheGames = Games;
-let cachePublishers = Publishers;
+const cache = {
+  games: Games,
+  publishers: Publishers,
+};
 
 const schema = buildSchema(`
 
@@ -35,29 +37,34 @@ const schema = buildSchema(`
   }
 
   type Mutation {
-    addPublisher(input: PublisherInput): Publishers
+    addPublisher(input: PublisherInput): [Publishers]
   }
 `);
 
 // Mutation
-
-const addPublisher = ({ Publishers }) => ({ input }) => { // eslint-disable-line no-shadow
+const addPublisher = p => ({ input }) => { // eslint-disable-line no-shadow
   const { title } = input;
-  const id = (Publishers.length + 1);
-  const newPublisher = { id, title };
-  cachePublishers = [...Publishers, newPublisher];
-  return { id, title };
+  const id = `${p.length + 1}`;
+  p.push({ id, title }); // not working ? => p = [...p, newPublisher];
+  const i = p.length - 1;
+  return [p[i]];
+};
+
+const mutation = {
+  add: {
+    publisher: addPublisher,
+  },
 };
 
 // mapping
 const apiMap = {
   games: resolver.games({
-    Games: cacheGames, Publishers: cachePublishers, resolver, join,
+    Games: cache.games, Publishers: cache.publishers, resolver, join,
   }),
   publishers: resolver.publishers({
-    Publishers: cachePublishers, Games: cacheGames, resolver, join,
+    Publishers: cache.publishers, Games: cache.games, resolver, join,
   }),
-  addPublisher: addPublisher({ Publishers: cachePublishers }),
+  addPublisher: mutation.add.publisher(cache.publishers),
 };
 
 const app = express();
