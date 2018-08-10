@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { describe, it } = require('mocha');
 const {
   resolver, join,
 } = require('./index');
