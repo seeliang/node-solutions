@@ -2,10 +2,11 @@ const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const { buildSchema } = require('graphql');
 const { Games, Publishers } = require('./data');
+const mutation = require('./mutation');
 
 const {
   resolver, join,
-} = require('./resolvers');
+} = require('./resolver');
 
 const cache = {
   games: Games,
@@ -41,21 +42,6 @@ const schema = buildSchema(`
   }
 `);
 
-// Mutation
-const addPublisher = p => ({ input }) => { // eslint-disable-line no-shadow
-  const { title } = input;
-  const id = `${p.length + 1}`;
-  p.push({ id, title }); // not working ? => p = [...p, newPublisher];
-  const i = p.length - 1;
-  return [p[i]];
-};
-
-const mutation = {
-  add: {
-    publisher: addPublisher,
-  },
-};
-
 // mapping
 const apiMap = {
   games: resolver.games({
@@ -64,7 +50,7 @@ const apiMap = {
   publishers: resolver.publishers({
     Publishers: cache.publishers, Games: cache.games, resolver, join,
   }),
-  addPublisher: mutation.add.publisher(cache.publishers),
+  addPublisher: mutation.publishers.add(cache.publishers),
 };
 
 const app = express();
