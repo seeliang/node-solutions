@@ -1,5 +1,5 @@
-const publishers = require('./publishers');
+const publisher = require('./publishers');
 
 module.exports = {
-  publishers,
+  publisher,
 };

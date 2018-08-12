@@ -50,7 +50,7 @@ const apiMap = {
   publishers: resolver.publishers({
     Publishers: cache.publishers, Games: cache.games, resolver, join,
   }),
-  addPublisher: mutation.publishers.add(cache.publishers),
+  addPublisher: mutation.publisher.add(cache.publishers),
 };
 
 const app = express();
