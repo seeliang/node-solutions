@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "lint": "yarn eslint ./",
-    "test": "yarn lint && mocha -- **/*.test.js"
+    "test": "yarn lint && yarn unit-test",
+    "unit-test": "yarn mocha -- **/*.test.js"
   },
   "repository": {
     "type": "git",
