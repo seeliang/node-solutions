@@ -20,7 +20,7 @@ const Publishers = [
 ];
 
 
-describe('the join resolvers', () => {
+describe('resolver', () => {
   describe('join game', () => {
     it('should join games to publishers', () => {
       const result = join.game({
