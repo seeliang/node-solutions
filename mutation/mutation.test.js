@@ -28,6 +28,19 @@ describe('mutation', () => {
         ],
       );
     });
+
+    it('should edit publishers', () => {
+      const testPublishers = [].concat(Publishers);
+      const newPublisher = { id: '1', title: 'capcom' };
+      const result = mutation.publisher.edit(testPublishers)({ input: newPublisher });
+      expect(result).to.deep.eq([{ id: '1', title: 'capcom' }]);
+      expect(testPublishers).to.deep.eq(
+        [
+          { id: '1', title: 'capcom' },
+          { id: '2', title: 'santa monica' },
+        ],
+      );
+    });
   });
 
   describe('games', () => {
