@@ -58,5 +58,19 @@ describe('mutation', () => {
         ],
       );
     });
+
+    it('should edit game', () => {
+      const testGames = [].concat(Games);
+      const editGame = { id: '1', title: 'contra', publisherId: '1' };
+      const result = mutation.game.edit(testGames)({ input: editGame });
+      expect(result).to.deep.eq([editGame]);
+      expect(testGames).to.deep.eq(
+        [
+          { id: '1', title: 'contra', publisherId: '1' },
+          { id: '2', title: 'god of war', publisherId: '2' },
+          { id: '3', title: 'winning eleven', publisherId: '1' },
+        ],
+      );
+    });
   });
 });

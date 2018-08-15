@@ -6,6 +6,14 @@ const addGame = g => ({ input }) => { // eslint-disable-line no-shadow
   return [g[i]];
 };
 
+const editGame = g => ({ input }) => {
+  const { id, title, publisherId } = input;
+  const keyIndex = g.reduce((r, s, index) => (s.id === id ? index : r), 0);
+  g.splice(keyIndex, 1, { id, title, publisherId }); // mutation
+  return [g[keyIndex]];
+};
+
 module.exports = {
   add: addGame,
+  edit: editGame,
 };
