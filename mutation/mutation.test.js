@@ -47,14 +47,14 @@ describe('mutation', () => {
     it('should add games', () => {
       const testGame = [].concat(Games);
       const newGame = { title: 'contra', publisherId: '1' };
-      const result = mutation.publisher.add(testGame)({ input: newGame });
-      expect(result).to.deep.eq([{ id: '4', title: 'contra' }]);
+      const result = mutation.game.add(testGame)({ input: newGame });
+      expect(result).to.deep.eq([{ id: '4', title: 'contra', publisherId: '1' }]);
       expect(testGame).to.deep.eq(
         [
           { id: '1', title: 'metal gear solid', publisherId: '1' },
           { id: '2', title: 'god of war', publisherId: '2' },
           { id: '3', title: 'winning eleven', publisherId: '1' },
-          { id: '4', title: 'contra' },
+          { id: '4', title: 'contra', publisherId: '1' },
         ],
       );
     });
