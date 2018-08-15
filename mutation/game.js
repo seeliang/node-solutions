@@ -1,4 +1,4 @@
-const addGame = g => ({ input }) => { // eslint-disable-line no-shadow
+const addGame = g => ({ input }) => {
   const { title, publisherId } = input;
   const id = `${g.length + 1}`;
   g.push({ id, title, publisherId }); // mutation

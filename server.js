@@ -34,23 +34,30 @@ const schema = buildSchema(`
   }
 
   input AddPublisherInput{
-    title: String
+    title: String!
   }
 
   input EditPublisherInput{
-    id: ID
-    title: String
+    id: ID!
+    title: String!
   }
 
-  input GameInput{
-    title: String,
-    publisherId: ID
+  input addGameInput{
+    title: String!,
+    publisherId: ID!
+  }
+
+  input editGameInput {
+    id: ID!
+    title: String!,
+    publisherId: ID!
   }
 
   type Mutation {
     addPublisher(input: AddPublisherInput): [Publishers]
     editPublisher(input: EditPublisherInput): [Publishers]
-    addGame(input:GameInput): [Games]
+    addGame(input:addGameInput): [Games]
+    editGame(input: editGameInput): [Games]
   }
 `);
 
@@ -65,6 +72,7 @@ const apiMap = {
   addPublisher: mutation.publisher.add(cache.publishers),
   addGame: mutation.game.add(cache.games),
   editPublisher: mutation.publisher.edit(cache.publishers),
+  editGame: mutation.game.edit(cache.games),
 };
 
 const app = express();
