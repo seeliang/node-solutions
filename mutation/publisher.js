@@ -9,7 +9,7 @@ const addPublisher = p => ({ input }) => { // eslint-disable-line no-shadow
 
 const editPublisher = p => ({ input }) => {
   const { id, title } = input;
-  const keyIndex = p.reduce((r, s, index) => (s.id === id ? index : r, 0));
+  const keyIndex = p.reduce((r, s, index) => (s.id === id ? index : r), 0);
   p.splice(keyIndex, 1, { id, title }); // mutation
   return [p[keyIndex]];
 };
