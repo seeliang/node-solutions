@@ -1,0 +1,11 @@
+{
+  "name": "node-mysql",
+  "version": "1.0.0",
+  "description": "connect node with mysql",
+  "main": "index.js",
+  "author": "sihui",
+  "license": "MIT",
+  "dependencies": {
+    "mysql": "mysqljs/mysql"
+  }
+}
