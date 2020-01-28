@@ -14,13 +14,24 @@ api.listen(3456, () => {
   console.log("Server running on port 3456");
 });
 
-const rowDataToJson = data => Object.values(JSON.parse(JSON.stringify(data)))
+const rowDataToJson = data => Object.values(JSON.parse(JSON.stringify(data)));
 
-api.get("/get/department", async (req, res, next) => {
-  connection.connect();
-  connection.query("SELECT * FROM `DEPARTMENT`", (error, results) => {
-    if (error) throw error;
-    res.json(rowDataToJson(results));
+const selectSQL = {
+  department: "SELECT * FROM `DEPARTMENT`"
+};
+
+const getDataFromSQL = ({ query }) =>
+  new Promise(function(resolve, reject) {
+    connection.connect();
+    connection.query(query, (error, results) => {
+      if (error) return reject(error);
+      resolve(rowDataToJson(results));
+    });
+    connection.end();
   });
-  connection.end();
+
+api.get("/get/department", (req, res) => {
+  getDataFromSQL({ query: selectSQL.department}).then(result => {
+    res.json(result)
+  }).catch(error => console.log(error));
 });
