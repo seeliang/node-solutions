@@ -8,5 +8,11 @@
   "dependencies": {
     "express": "^4.17.1",
     "mysql": "mysqljs/mysql"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
+  "scripts": {
+    "start": "yarn nodemon ./index.js localhost 3456"
   }
 }
