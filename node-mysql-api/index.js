@@ -11,7 +11,7 @@ connection.connect();
  
 connection.query('SELECT * FROM `DEPARTMENT`', function (error, results, fields) {
   if (error) throw error;
-  console.log('The solution is: ', results);
+  console.log('The DEPARTMENT List`: ', results);
 });
  
 connection.end();
