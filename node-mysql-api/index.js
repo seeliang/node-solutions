@@ -17,21 +17,30 @@ api.listen(3456, () => {
 const rowDataToJson = data => Object.values(JSON.parse(JSON.stringify(data)));
 
 const selectSQL = {
-  department: "SELECT * FROM `DEPARTMENT`"
+  department: "SELECT * FROM `DEPARTMENT`",
+  employee: "SELECT * FROM `EMPLOYEE`"
 };
 
 const getDataFromSQL = ({ query }) =>
-  new Promise(function(resolve, reject) {
-    connection.connect();
+  new Promise((resolve, reject) => {
     connection.query(query, (error, results) => {
       if (error) return reject(error);
       resolve(rowDataToJson(results));
     });
-    connection.end();
   });
 
 api.get("/get/department", (req, res) => {
-  getDataFromSQL({ query: selectSQL.department}).then(result => {
-    res.json(result)
-  }).catch(error => console.log(error));
+  getDataFromSQL({ query: selectSQL.department })
+    .then(result => {
+      res.json(result);
+    })
+    .catch(error => console.log(error));
+});
+
+api.get("/get/employee", (req, res) => {
+  getDataFromSQL({ query: selectSQL.employee })
+    .then(result => {
+      res.json(result);
+    })
+    .catch(error => console.log(error));
 });
