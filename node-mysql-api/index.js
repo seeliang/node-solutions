@@ -10,6 +10,12 @@ var connection = mysql.createConnection({
 
 const api = express();
 
+var bodyParser = require('body-parser')
+api.use( bodyParser.json() );       // to support JSON-encoded bodies
+api.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
+
 api.listen(3456, () => {
   console.log("Server running on port 3456");
 });
@@ -44,3 +50,8 @@ api.get("/get/employee", (req, res) => {
     })
     .catch(error => console.log(error));
 });
+
+api.post('/post/employee',(req,res) => {
+  console.log(req.body);
+  res.send('POST request to employee success')
+})
