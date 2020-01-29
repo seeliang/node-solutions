@@ -31,8 +31,10 @@ const selectSQL = {
   employee: "SELECT * FROM `EMPLOYEE`"
 };
 
-const getDataFromSQL = ({ query }) =>
+const getDataFromSQL = ({ query, req }) =>
   new Promise((resolve, reject) => {
+    const id = req.query.dept_id;
+    console.log(id)
     connection.query(query, (error, results) => {
       if (error) return reject(error);
       resolve(rowDataToJson(results));
@@ -48,7 +50,7 @@ api.get("/get/department", (req, res) => {
 });
 
 api.get("/get/employee", (req, res) => {
-  getDataFromSQL({ query: selectSQL.employee })
+  getDataFromSQL({ query: selectSQL.employee, req })
     .then(result => {
       res.json(result);
     })
