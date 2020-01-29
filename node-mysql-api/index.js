@@ -10,11 +10,14 @@ var connection = mysql.createConnection({
 
 const api = express();
 
-var bodyParser = require('body-parser')
-api.use( bodyParser.json() );       // to support JSON-encoded bodies
-api.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-})); 
+var bodyParser = require("body-parser");
+api.use(bodyParser.json()); // to support JSON-encoded bodies
+api.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true
+  })
+);
 
 api.listen(3456, () => {
   console.log("Server running on port 3456");
@@ -22,6 +25,7 @@ api.listen(3456, () => {
 
 const rowDataToJson = data => Object.values(JSON.parse(JSON.stringify(data)));
 
+// get
 const selectSQL = {
   department: "SELECT * FROM `DEPARTMENT`",
   employee: "SELECT * FROM `EMPLOYEE`"
@@ -51,7 +55,24 @@ api.get("/get/employee", (req, res) => {
     .catch(error => console.log(error));
 });
 
-api.post('/post/employee',(req,res) => {
-  console.log(req.body);
-  res.send('POST request to employee success')
-})
+// post
+const insertSQL = {
+  employee: "INSERT INTO EMPLOYEE SET ?"
+};
+
+const postDataToSQL = ({ query, data }) =>
+  new Promise((resolve, result) => {
+    connection.query(query, data, (error, results) => {
+      if (error) return resolve(error);
+      resolve(result);
+    });
+  });
+
+api.post("/post/employee", (req, res) => {
+  const data = req.body;
+  postDataToSQL({ query: insertSQL.employee, data })
+    .then(() => {
+      res.send("POST request to employee success");
+    })
+    .catch(error => console.log(error));
+});
