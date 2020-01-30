@@ -20,7 +20,7 @@ api.use(
 );
 
 api.listen(3456, () => {
-  console.log("Server running on port 3456");
+  console.log("Server is running on port 3456");
 });
 
 const rowDataToJson = data => Object.values(JSON.parse(JSON.stringify(data)));
