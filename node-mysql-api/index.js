@@ -27,14 +27,17 @@ const rowDataToJson = data => Object.values(JSON.parse(JSON.stringify(data)));
 
 // get
 const selectSQL = {
-  department: "SELECT * FROM `DEPARTMENT`",
-  employee: "SELECT * FROM `EMPLOYEE`"
+  department: "SELECT * FROM DEPARTMENT",
+  employee: "SELECT * FROM EMPLOYEE",
+  employeeJoinViaDeptId: `SELECT E.ID, E.NAME, E.SALARY,E.DEPT_ID, D.LOCATION,D.NAME AS DEPARTMENT_NAME
+  FROM EMPLOYEE  E
+  INNER JOIN DEPARTMENT D
+  ON E.DEPT_ID = D.DEPT_ID
+  ORDER BY ID`
 };
 
-const getDataFromSQL = ({ query, req }) =>
+const getDataFromSQL = ({ query }) =>
   new Promise((resolve, reject) => {
-    const id = req.query.dept_id;
-    console.log(id)
     connection.query(query, (error, results) => {
       if (error) return reject(error);
       resolve(rowDataToJson(results));
@@ -50,8 +53,17 @@ api.get("/get/department", (req, res) => {
 });
 
 api.get("/get/employee", (req, res) => {
-  getDataFromSQL({ query: selectSQL.employee, req })
+  const { dept_id } = req.query;
+  let query = selectSQL.employee;
+  if (dept_id) {
+    query = selectSQL.employeeJoinViaDeptId;
+  }
+  getDataFromSQL({ query })
     .then(result => {
+      if (dept_id) {
+        const list = result.filter(i => i.DEPT_ID === parseInt(dept_id));
+        return res.json(list);
+      }
       res.json(result);
     })
     .catch(error => console.log(error));
