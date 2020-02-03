@@ -17,8 +17,8 @@ const gow = {
   developers: [
     {
       id: 1,
-      name: 'santa monica'
-    }  
+      name: "santa monica"
+    }
   ],
   publishers: [
     {
@@ -50,6 +50,7 @@ const url = "mongodb://localhost:27017";
 
 // Database Name
 const dbName = "games";
+const connection = "results";
 // Use connect method to connect to the server
 MongoClient.connect(
   url,
@@ -59,15 +60,21 @@ MongoClient.connect(
     console.log("Connected successfully to server");
 
     const db = client.db(dbName);
-    insertGame(db, function(result) {
-      console.log(result);
-      client.close();
-    });
+    // insertGame(db, function(result) {
+    //   console.log(result);
+    //   client.close();
+    // });
+    findAllGames(db, data => data.forEach(i => console.log(JSON.stringify(i))));
   }
 );
-const insertGame = function(db, callback) {
-  const collection = db.collection("results");
-  collection.insertMany([normalizedData], function(err, result) {
+
+const findAllGames = (db, callback) => {
+  const cursor = db.collection(connection).find({});
+  callback(cursor);
+};
+const insertGame = (db, callback) => {
+  const collection = db.collection(connection);
+  collection.insertMany([normalizedData], (err, result) => {
     if (err) {
       console.log(err);
       return;
@@ -77,5 +84,3 @@ const insertGame = function(db, callback) {
     callback(result);
   });
 };
-
-
