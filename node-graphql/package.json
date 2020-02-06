@@ -9,10 +9,6 @@
     "test": "yarn lint && yarn unit-test",
     "unit-test": "yarn mocha -- **/*.test.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/seeliang/graphql-express.git"
-  },
   "author": "sihui liang",
   "license": "MIT",
   "bugs": {
