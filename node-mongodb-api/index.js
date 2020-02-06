@@ -1,77 +1,80 @@
-const MongoClient = require("mongodb").MongoClient;
-const assert = require("assert");
-const { normalize, schema } = require("normalizr");
+const { MongoClient } = require('mongodb');
+const assert = require('assert');
+const { normalize, schema } = require('normalizr');
 
 // schema
 
-const publisher = new schema.Entity("publisher");
-const character = new schema.Entity("character");
-const developer = new schema.Entity("developer");
-const game = new schema.Entity("game", {
+const publisher = new schema.Entity('publisher');
+const character = new schema.Entity('character');
+const developer = new schema.Entity('developer');
+const game = new schema.Entity('game', {
   developers: [developer],
   publishers: [publisher],
-  characters: [character]
+  characters: [character],
 });
 const gow = {
   id: 1,
   developers: [
     {
       id: 1,
-      name: "santa monica"
-    }
+      name: 'santa monica',
+    },
   ],
   publishers: [
     {
       id: 1,
-      name: "sony computer entertainment"
+      name: 'sony computer entertainment',
     },
     {
       id: 2,
-      name: "capcom"
-    }
+      name: 'capcom',
+    },
   ],
-  name: "God of war",
+  name: 'God of war',
   characters: [
     {
       id: 1,
-      name: "Kratos"
+      name: 'Kratos',
     },
     {
       id: 2,
-      name: "Athena"
-    }
+      name: 'Athena',
+    },
   ],
-  publishYear: 2005
+  publishYear: 2005,
 };
 const normalizedData = normalize(gow, game);
 
 // Connection URL
-const url = "mongodb://localhost:27017";
+const url = 'mongodb://localhost:27017';
+
 
 // Database Name
-const dbName = "games";
-const connection = "results";
+const dbName = 'games';
+const connection = 'results';
 // Use connect method to connect to the server
+const findAllGames = (db, callback) => {
+  const cursor = db.collection(connection).find({});
+  callback(cursor);
+};
+
 MongoClient.connect(
   url,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  function(err, client) {
+  (err, client) => {
     assert.equal(null, err);
-    console.log("Connected successfully to server");
+    console.log('Connected successfully to server');
 
     const db = client.db(dbName);
     // insertGame(db, function(result) {
     //   console.log(result);
     //   client.close();
     // });
-    findAllGames(db, data => data.forEach(i => console.log(JSON.stringify(i))));
-  }
+    findAllGames(db, (data) => data.forEach((i) => console.log(JSON.stringify(i))));
+  },
 );
 
-const findAllGames = (db, callback) => {
-  const cursor = db.collection(connection).find({});
-  callback(cursor);
-};
+
 const insertGame = (db, callback) => {
   const collection = db.collection(connection);
   collection.insertMany([normalizedData], (err, result) => {
@@ -80,7 +83,7 @@ const insertGame = (db, callback) => {
       return;
     }
     assert.equal(err, null);
-    console.log("Inserted entry into the collection");
+    console.log('Inserted entry into the collection');
     callback(result);
   });
 };
