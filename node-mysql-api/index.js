@@ -1,6 +1,7 @@
 const express = require("express");
 var mysql = require("mysql");
-var connection = mysql.createConnection({
+var pool = mysql.createPool({
+  connectionLimit : 10,
   host: "localhost",
   user: "root",
   password: "root",
@@ -38,7 +39,7 @@ const selectSQL = {
 
 const getDataFromSQL = ({ query }) =>
   new Promise((resolve, reject) => {
-    connection.query(query, (error, results) => {
+    pool.query(query, (error, results) => {
       if (error) return reject(error);
       resolve(rowDataToJson(results));
     });
@@ -76,7 +77,7 @@ const insertSQL = {
 
 const postDataToSQL = ({ query, data }) =>
   new Promise((resolve, result) => {
-    connection.query(query, data, (error, results) => {
+    pool.query(query, data, (error, results) => {
       if (error) return resolve(error);
       resolve(result);
     });
