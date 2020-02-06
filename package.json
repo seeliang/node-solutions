@@ -1,0 +1,14 @@
+{
+  "name": "node-solutions",
+  "version": "1.0.0",
+  "description": "the place to document node solutions",
+  "main": "index.js",
+  "repository": "git@github.com:seeliang/node-playground.git",
+  "author": "seeliang <me@sihuiliang.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1"
+  }
+}
