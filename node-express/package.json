@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon node server.js",
+    "api": "nodemon node api.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -18,6 +19,7 @@
   },
   "homepage": "https://github.com/seeliang/node-express#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "ejs": "^3.0.1",
     "express": "^4.16.3"
   },
