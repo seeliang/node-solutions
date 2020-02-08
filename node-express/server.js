@@ -6,8 +6,10 @@ const pathTo = {
 };
 const web = express();
 
-web.get('/', (req, res) => res.send('home'));
-web.get('/hi', (req, res) => res.send('hi'));
+web.set('view engine', 'pug');
+
+web.get('/', (req, res) => res.render('index', { title: 'Hey', message: 'Hello there!' }));
+web.get('/hi', (req, res) => res.render('index', { title: 'Hi', message: 'Hi guys!' }));
 console.log(pathTo);
 web.use('/static', express.static(pathTo.static));
 
