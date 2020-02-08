@@ -6,10 +6,10 @@ const pathTo = {
 };
 const web = express();
 
-web.set('view engine', 'pug');
+web.set('view engine', 'ejs');
 
-web.get('/', (req, res) => res.render('index', { title: 'Hey', message: 'Hello there!' }));
-web.get('/hi', (req, res) => res.render('index', { title: 'Hi', message: 'Hi guys!' }));
+web.get('/', (req, res) => res.render('main', { title: 'Home', message: 'Hello there! homepage for you' }));
+web.get('/hi', (req, res) => res.render('main', { title: 'Hi', message: 'Hi guys!' }));
 console.log(pathTo);
 web.use('/static', express.static(pathTo.static));
 

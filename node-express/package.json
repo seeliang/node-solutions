@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/seeliang/node-express#readme",
   "dependencies": {
+    "ejs": "^3.0.1",
     "express": "^4.16.3"
   },
   "devDependencies": {
