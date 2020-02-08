@@ -76,10 +76,10 @@ const insertSQL = {
   employee: 'INSERT INTO EMPLOYEE SET ?',
 };
 
-const postDataToSQL = ({ query, data }) => new Promise((resolve, result) => {
+const postDataToSQL = ({ query, data }) => new Promise((resolve, reject) => {
   pool.query(query, data, (error, results) => {
-    if (error) return resolve(error);
-    resolve(result);
+    if (error) return reject(error);
+    return resolve(results);
   });
 });
 
