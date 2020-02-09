@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb');
 const assert = require('assert');
 const { normalize, schema } = require('normalizr');
+const { api, port } = require('./api');
 
 // schema
 
@@ -87,3 +88,15 @@ const insertGame = (db, callback) => {
     callback(result);
   });
 };
+
+
+// api
+
+api.listen(port, () => {
+  console.log(`api is running on port ${port}`);
+});
+
+api.get('/get/games', (req, res) => {
+  const games = [{ pacman: 'japan' }];
+  res.json(games);
+});

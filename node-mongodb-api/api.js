@@ -10,4 +10,4 @@ api.use(
   }),
 );
 
-export { api, port };
+module.exports = { api, port };
