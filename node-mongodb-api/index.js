@@ -54,8 +54,8 @@ const url = 'mongodb://localhost:27017';
 const dbName = 'games';
 const connection = 'results';
 // Use connect method to connect to the server
-const findAllGames = (db, callback) => {
-  const cursor = db.collection(connection).find({});
+const findAllGames = async (db, callback) => {
+  const cursor = await db.collection(connection).find({}).toArray();
   callback(cursor);
 };
 
@@ -71,7 +71,7 @@ MongoClient.connect(
     //   console.log(result);
     //   client.close();
     // });
-    findAllGames(db, (data) => data.forEach((i) => console.log(JSON.stringify(i))));
+    findAllGames(db, (data) => console.log(JSON.stringify(data)));
   },
 );
 
