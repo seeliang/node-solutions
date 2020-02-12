@@ -58,23 +58,39 @@ const findAllGames = async (db, callback) => {
   const cursor = await db.collection(connection).find({}).toArray();
   callback(cursor);
 };
+const connectDb = () => new Promise((res, rej) => {
+  MongoClient.connect(
+    url,
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    (err, client) => {
+      assert.equal(null, err);
+      if (err) {
+        rej(err);
+        return;
+      }
+      console.log('Connected successfully to db');
+      const db = client.db(dbName);
+      res(db);
+    },
+  );
+});
 
-MongoClient.connect(
-  url,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  (err, client) => {
-    assert.equal(null, err);
-    console.log('Connected successfully to server');
 
-    const db = client.db(dbName);
-    // insertGame(db, function(result) {
-    //   console.log(result);
-    //   client.close();
-    // });
-    findAllGames(db, (data) => console.log(JSON.stringify(data)));
-  },
-);
+// api
 
+api.listen(port, () => {
+  console.log(`api is running on port ${port}`);
+});
+
+// get
+
+api.get('/get/games', (req, res) => {
+  connectDb().then((db) => {
+    findAllGames(db, (feed) => res.json(feed));
+  });
+});
+
+// post
 
 const insertGame = (db, callback) => {
   const collection = db.collection(connection);
@@ -88,15 +104,3 @@ const insertGame = (db, callback) => {
     callback(result);
   });
 };
-
-
-// api
-
-api.listen(port, () => {
-  console.log(`api is running on port ${port}`);
-});
-
-api.get('/get/games', (req, res) => {
-  const games = [{ pacman: 'japan' }];
-  res.json(games);
-});
