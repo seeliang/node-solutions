@@ -13,38 +13,6 @@ const game = new schema.Entity('game', {
   publishers: [publisher],
   characters: [character],
 });
-const gow = {
-  id: 1,
-  developers: [
-    {
-      id: 1,
-      name: 'santa monica',
-    },
-  ],
-  publishers: [
-    {
-      id: 1,
-      name: 'sony computer entertainment',
-    },
-    {
-      id: 2,
-      name: 'capcom',
-    },
-  ],
-  name: 'God of war',
-  characters: [
-    {
-      id: 1,
-      name: 'Kratos',
-    },
-    {
-      id: 2,
-      name: 'Athena',
-    },
-  ],
-  publishYear: 2005,
-};
-const normalizedData = normalize(gow, game);
 
 // Connection URL
 const url = 'mongodb://localhost:27017';
@@ -54,10 +22,7 @@ const url = 'mongodb://localhost:27017';
 const dbName = 'games';
 const connection = 'results';
 // Use connect method to connect to the server
-const findAllGames = async (db, callback) => {
-  const cursor = await db.collection(connection).find({}).toArray();
-  callback(cursor);
-};
+
 const connectDb = () => new Promise((res, rej) => {
   MongoClient.connect(
     url,
@@ -83,6 +48,10 @@ api.listen(port, () => {
 });
 
 // get
+const findAllGames = async (db, callback) => {
+  const cursor = await db.collection(connection).find({}).toArray();
+  callback(cursor);
+};
 
 api.get('/get/games', (req, res) => {
   connectDb().then((db) => {
@@ -92,9 +61,9 @@ api.get('/get/games', (req, res) => {
 
 // post
 
-const insertGame = (db, callback) => {
+const insertGame = (db, data, callback) => {
   const collection = db.collection(connection);
-  collection.insertMany([normalizedData], (err, result) => {
+  collection.insertMany([normalize(data, game)], (err, result) => {
     if (err) {
       console.log(err);
       return;
@@ -104,3 +73,10 @@ const insertGame = (db, callback) => {
     callback(result);
   });
 };
+
+api.post('/post/games', (req, res) => {
+  const data = req.body;
+  connectDb().then((db) => {
+    insertGame(db, data, (feed) => res.json(feed));
+  });
+});
