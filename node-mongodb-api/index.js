@@ -63,10 +63,8 @@ api.get('/get/games', (req, res) => {
 
 const insertGame = (db, data, callback) => {
   const collection = db.collection(connection);
-  const insertData = {
-    ...normalize(data, game).entities,
-  };
-  collection.insertMany([insertData], (err, result) => {
+  const insertData = data.map((i) => normalize(i, game).entities);
+  collection.insertMany(insertData, (err, result) => {
     if (err) {
       console.log(err);
       return;
@@ -79,6 +77,10 @@ const insertGame = (db, data, callback) => {
 
 api.post('/post/games', (req, res) => {
   const data = req.body;
+  if (Array.isArray(data) !== true) {
+    res.json('data type needs to be array');
+    return;
+  }
   connectDb().then((db) => {
     insertGame(db, data, (feed) => res.json(feed));
   });
