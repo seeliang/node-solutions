@@ -63,7 +63,10 @@ api.get('/get/games', (req, res) => {
 
 const insertGame = (db, data, callback) => {
   const collection = db.collection(connection);
-  collection.insertMany([normalize(data, game)], (err, result) => {
+  const insertData = {
+    ...normalize(data, game).entities,
+  };
+  collection.insertMany([insertData], (err, result) => {
     if (err) {
       console.log(err);
       return;
@@ -80,3 +83,38 @@ api.post('/post/games', (req, res) => {
     insertGame(db, data, (feed) => res.json(feed));
   });
 });
+
+
+/* testing json
+{
+  "id": 1,
+  "developers": [
+    {
+      "id": 1,
+      "name": "santa monica"
+    }
+  ],
+  "publishers": [
+    {
+      "id": 1,
+      "name": "sony computer entertainment"
+    },
+    {
+      "id": 2,
+      "name": "capcom"
+    }
+  ],
+  "name": "God of war",
+  "characters": [
+    {
+      "id": 1,
+      "name": "Kratos"
+    },
+    {
+      "id": 2,
+      "name": "Athena"
+    }
+  ],
+  "publishYear": 2005
+}
+*/
