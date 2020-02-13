@@ -4,5 +4,16 @@
   "description": "node passport sample",
   "main": "index.js",
   "author": "sihui liang",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon node index.js"
+  },
+  "dependencies": {
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "passport": "^0.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
 }
