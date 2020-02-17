@@ -8,6 +8,16 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 const credentials = require('./credentials');
 
+server.use(passport.initialize());
+server.use(passport.session());
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
 passport.use(new GoogleStrategy({
   clientID: credentials.client_id,
   clientSecret: credentials.client_secret,
@@ -15,7 +25,7 @@ passport.use(new GoogleStrategy({
 },
 ((accessToken, refreshToken, profile, callback) => {
   console.log(profile);
-  return callback();
+  return callback(null, profile);
 })));
 
 
