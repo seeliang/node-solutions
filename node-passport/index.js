@@ -34,10 +34,14 @@ passport.use(new GoogleStrategy({
 server.set('view engine', 'ejs');
 
 server.get('/', (req, res) => res.render('main', { title: 'Home', message: 'Hello! homepage for you' }));
-server.get('/login', (req, res) => res.render('main', { title: 'login', message: 'please login guys!' }));
+server.get('/login',
+  (req, res, done) => { req.message = 'middleware'; done(); },
+  (req, res) => res.render('main', { title: 'login', message: `please login guys! ${req.message}` }));
 server.listen(1200, () => console.log('start at port localhost:1200'));
 
 // auth
 server.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
-server.get('/profile', passport.authenticate('google'), (req, res) => res.render('main', { title: 'profile', message: 'oh it is you!' }));
+server.get('/profile',
+  passport.authenticate('google'),
+  (req, res) => res.render('main', { title: 'profile', message: 'oh it is you!' }));
