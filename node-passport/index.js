@@ -6,6 +6,10 @@ const server = express();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
+const data = {
+  profiles: [],
+};
+
 const credentials = require('./credentials');
 
 server.use(passport.initialize());
@@ -25,6 +29,7 @@ passport.use(new GoogleStrategy({
 },
 ((accessToken, refreshToken, profile, callback) => {
   console.log(profile);
+  data.profiles.push(profile);
   return callback(null, profile);
 })));
 
@@ -44,4 +49,4 @@ server.get('/auth/google',
   passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/plus.login'] }));
 server.get('/profile',
   passport.authenticate('google'),
-  (req, res) => res.render('main', { title: 'profile', message: 'oh it is you!' }));
+  (req, res) => res.render('main', { title: 'profile', message: `oh it is you! ${data.profiles.slice(-1)[0].displayName}` }));
