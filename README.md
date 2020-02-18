@@ -9,3 +9,5 @@
 * read and write via api
 ## node mysql
 * read and write via api
+## node passport
+* get data from google profile
