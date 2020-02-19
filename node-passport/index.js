@@ -28,9 +28,8 @@ passport.use(new GoogleStrategy({
   callbackURL: 'http://localhost:1200/profile',
 },
 ((accessToken, refreshToken, profile, callback) => {
-  console.log(profile);
   data.profiles.push(profile);
-  return callback(null, profile);
+  callback(null, profile);
 })));
 
 
