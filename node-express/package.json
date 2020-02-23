@@ -8,6 +8,7 @@
     "api": "nodemon node api.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": "git@github.com:seeliang/node-playground/tree/master/node-express",
   "keywords": [
     "node",
     "express"
