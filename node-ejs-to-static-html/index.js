@@ -5,34 +5,23 @@ const ejs = require('ejs');
 
 // promisify
 const mkdir = util.promisify(fs.mkdir);
-const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
-const config = {
-  root: './sample/views',
-};
 
-const data = {
-  home: {
-    title: 'Home',
-    message: 'yo',
-  },
-};
-
-async function render() {
+async function render({ config, data }) {
   try {
     // create output directory
-    await mkdir('dist', { recursive: true });
+    await mkdir(config.dist, { recursive: true });
 
     // render ejs template to html string
     const html = await ejs
-      .renderFile(`${config.root}/main.ejs`, data.home)
+      .renderFile(`${config.root}/main.ejs`, data[0])
       .then((output) => output);
 
     // create file and write html
-    await writeFile('dist/index.html', html, 'utf8');
+    await writeFile(`${config.dist}/${data[0].page}.html`, html, 'utf8');
   } catch (error) {
     console.log(error);
   }
 }
-render();
+module.exports = render;
