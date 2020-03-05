@@ -9,17 +9,19 @@ const writeFile = util.promisify(fs.writeFile);
 
 
 async function render({ config, data }) {
+  const { ejsFolder, dist } = config;
+  const { content, set } = data[0];
   try {
     // create output directory
-    await mkdir(config.dist, { recursive: true });
+    await mkdir(dist, { recursive: true });
 
     // render ejs template to html string
     const html = await ejs
-      .renderFile(`${config.root}/main.ejs`, data[0])
+      .renderFile(`${ejsFolder}/${set.template}.ejs`, content)
       .then((output) => output);
 
     // create file and write html
-    await writeFile(`${config.dist}/${data[0].page}.html`, html, 'utf8');
+    await writeFile(`${dist}/${set.page}.html`, html, 'utf8');
   } catch (error) {
     console.log(error);
   }
