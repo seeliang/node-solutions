@@ -1,0 +1,25 @@
+{
+  "name": "node-express",
+  "version": "1.0.0",
+  "description": "basic node express setup",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon node server.js",
+    "build": "node generate-html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sihuiliang hi@sihuiliang.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seeliang/node-express/issues"
+  },
+  "homepage": "https://github.com/seeliang/node-express#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.0.1",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
