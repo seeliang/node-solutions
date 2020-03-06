@@ -5,16 +5,27 @@ const config = {
   dist: 'dist',
 };
 
-const data = [{
-  content: {
-    title: 'Home',
-    message: 'yo',
+const data = [
+  {
+    content: {
+      title: 'Home',
+      message: 'yo',
+    },
+    set: {
+      page: 'home',
+      template: 'main',
+    },
   },
-  set: {
-    page: 'home',
-    template: 'main',
+  {
+    content: {
+      title: 'get',
+      message: 'you',
+    },
+    set: {
+      page: 'get',
+      template: 'main',
+    },
   },
-},
 ];
 
 generator({ config, data });
