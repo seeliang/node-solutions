@@ -5,15 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon node server.js",
-    "api": "nodemon node api.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "stage": "node server.js"
+    "build": "node generate-html",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "git@github.com:seeliang/node-playground/tree/master/node-express",
-  "keywords": [
-    "node",
-    "express"
-  ],
   "author": "sihuiliang hi@sihuiliang.com",
   "license": "MIT",
   "bugs": {
