@@ -1,0 +1,9 @@
+{
+  "name": "node-ejs-to-static-html",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.0.1"
+  }
+}
