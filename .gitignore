@@ -102,4 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
-node-passport/credentials.js
+*/**/credentials.js
+*/**/credentials.json
+*/**/token.json
