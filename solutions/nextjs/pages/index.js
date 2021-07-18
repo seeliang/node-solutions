@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Title from "../react/title.tsx"
+import Input from "../react/input.tsx"
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
         <Title/>
+        <Input />
 
         <p className={styles.description}>
           Get started by editing{' '}
