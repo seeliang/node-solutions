@@ -23,6 +23,9 @@ export default function Home() {
         <Link href="/static">
           <a>Go to Static</a>
         </Link>
+        <Link href="/post/abc">
+          <a>Go to post abc</a>
+        </Link>
 
         <p className={styles.description}>
           Get started by editing{' '}
