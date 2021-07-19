@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
 import styles from '../styles/Home.module.css'
 import Title from "../react/title.tsx"
 import Input from "../react/input.tsx"
@@ -19,6 +20,9 @@ export default function Home() {
         </h1>
         <Title/>
         <Input />
+        <Link href="/static">
+          <a>Go to Static</a>
+        </Link>
 
         <p className={styles.description}>
           Get started by editing{' '}
