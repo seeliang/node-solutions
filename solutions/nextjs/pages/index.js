@@ -1,9 +1,9 @@
-import Head from 'next/head'
+import Head from 'next/head';
 // import Image from 'next/image'
-import Link from 'next/link'
-import styles from '../styles/Home.module.css'
-import Title from "../react/title.tsx"
-import Input from "../react/input.tsx"
+import Link from 'next/link';
+import styles from '../styles/Home.module.css';
+import Title from '../react/title.tsx';
+import Input from '../react/input.tsx';
 
 export default function Home() {
   return (
@@ -76,5 +76,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )
+  );
 }
