@@ -16,14 +16,15 @@ const storeFixture = (api, response) => {
   fs.writeFileSync(record, JSON.stringify(response.data));
 };
 const fixtureLayer = (req, res, next) => {
+  const thatStaticFile = `${fixturePath}api.dictionaryapi.dev/api/v2/entries/en/hello.json`;
   if (!shallUseFixture) {
     return next();
   }
   try {
-    console.log(req.params);
-    // if (cache.has(id)) {
-    //   return res.status(200).json(cache.get(id));
-    // }
+    if (fs.existsSync(thatStaticFile)) {
+      const result = JSON.parse(fs.readFileSync(thatStaticFile));
+      return res.status(200).json(result);
+    }
     return next();
   } catch (err) {
     throw new Error(err);
