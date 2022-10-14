@@ -1,0 +1,20 @@
+{
+  "name": "cache",
+  "version": "1.0.0",
+  "description": "cache ext api call",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sihuiliang hi@sihuiliang.com",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.1.2",
+    "express": "^4.16.3",
+    "node-cache": "^5.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
