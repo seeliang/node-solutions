@@ -19,13 +19,13 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
-        <Title/>
+        <Title />
         <Input />
         <Link href="/static">
-          <a>Go to Static</a>
+          Go to Static
         </Link>
         <Link href="/post/abc">
-          <a>Go to post abc</a>
+          Go to post abc
         </Link>
 
         <p className={styles.description}>
