@@ -23,7 +23,7 @@ api.use('/word', externalGetProxy);
 // end of proxy get
 
 // proxy post
-const externalPostProxy = (req, res) => proxy.web( // works fine without req body
+const externalPostProxy = (req, res) => proxy.web(
   req,
   res,
   {
@@ -34,7 +34,7 @@ const externalPostProxy = (req, res) => proxy.web( // works fine without req bod
     console.error(err);
   },
 );
-api.use('/post-ext', externalPostProxy);
+api.use('/post-ext', externalPostProxy).use(express.json());
 // end of proxy post
 
 api.listen(port, () => {
