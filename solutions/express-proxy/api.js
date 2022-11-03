@@ -34,7 +34,7 @@ if (shallUseExpressJsonBeforeProxy) {
 
 // proxy post
 const externalPostProxy = (req, res) => {
-  console.log('post body:', req.body); // would like to access req body
+  console.log('post body:', req.body); // would like to access req body with response to create static caching
   return proxy.web(
     req,
     res,
@@ -67,6 +67,6 @@ api.get('/get/users', (req, res) => {
 
 api.post('/post/users', (req, res) => {
   const data = req.body;
-  console.log(data);
+  console.log(data); // with express.json(), req.body works
   res.send(`POST request to success ${JSON.stringify(data)}`);
 });
