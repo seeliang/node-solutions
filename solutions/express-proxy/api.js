@@ -5,14 +5,6 @@ const express = require('express');
 const port = 8001;
 const api = express();
 
-api.use(express.json());
-api.use(
-  express.urlencoded({
-    extended: true,
-  }),
-);
-
-
 const proxy = httpProxy.createProxyServer();
 
 // proxy get
@@ -55,8 +47,14 @@ api.get('/get/users', (req, res) => {
   res.json(users);
 });
 
-api.post('/post/users', (req, res) => {
-  const data = req.body;
-  console.log(data);
-  res.send(`POST request to success ${JSON.stringify(data)}`);
-});
+api.use(
+  express.urlencoded({
+    extended: true,
+  }),
+)
+  .use(express.json())
+  .post('/post/users', (req, res) => {
+    const data = req.body;
+    console.log(data);
+    res.send(`POST request to success ${JSON.stringify(data)}`);
+  });
