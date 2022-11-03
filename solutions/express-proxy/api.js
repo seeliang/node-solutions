@@ -4,6 +4,7 @@ const express = require('express');
 
 const port = 8001;
 const api = express();
+
 api.use(express.json());
 api.use(
   express.urlencoded({
@@ -14,7 +15,8 @@ api.use(
 
 const proxy = httpProxy.createProxyServer();
 
-const externalProxy = (req, res) => proxy.web(
+// proxy get
+const externalGetProxy = (req, res) => proxy.web(
   req,
   res,
   {
@@ -25,12 +27,27 @@ const externalProxy = (req, res) => proxy.web(
     console.error(err);
   },
 );
+api.use('/word', externalGetProxy);
+// end of proxy get
+
+// proxy post
+const externalPostProxy = (req, res) => proxy.web( // works fine without req body
+  req,
+  res,
+  {
+    target: 'https://webhook.site/5919eca3-f02e-4ab1-ac31-2a95a8ec9904',
+    changeOrigin: true,
+  },
+  (err) => {
+    console.error(err);
+  },
+);
+api.use('/post-ext', externalPostProxy);
+// end of proxy post
 
 api.listen(port, () => {
   console.log(`api is running on port ${port}`);
 });
-
-api.use('/word', externalProxy);
 
 
 api.get('/get/users', (req, res) => {
