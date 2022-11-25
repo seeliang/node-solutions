@@ -24,8 +24,8 @@ export default function Home() {
         <Link href="/static">
           Go to Static
         </Link>
-        <Link href="/post/abc">
-          Go to post abc
+        <Link href="/post/about">
+          Go to post about
         </Link>
 
         <p className={styles.description}>
