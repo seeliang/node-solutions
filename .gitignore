@@ -105,3 +105,4 @@ dist
 **/*/credentials.js
 **/*/credentials.json
 **/*/token.json
+solutions/auth0/import.json
