@@ -7,19 +7,26 @@ const {
 } = cred;
 
 const id = process.argv.slice(2);
-const options = {
-  method: 'GET',
-  url: `https://${domain}/api/v2/jobs/${id}`,
-  headers: {
-    'content-type': 'application/json',
-    authorization: `Bearer ${token}`,
-  },
+
+const getStatus = (jobId) => {
+  const options = {
+    method: 'GET',
+    url: `https://${domain}/api/v2/jobs/${jobId}`,
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${token}`,
+    },
+  };
+
+  console.log(id);
+
+  axios.request(options).then((response) => {
+    console.log(response.data);
+  }).catch((error) => {
+    console.error(error);
+  });
 };
 
-console.log(id);
+module.exports = getStatus;
 
-axios.request(options).then((response) => {
-  console.log(response.data);
-}).catch((error) => {
-  console.error(error);
-});
+getStatus(id);
