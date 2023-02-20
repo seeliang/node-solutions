@@ -8,7 +8,8 @@ const {
 
 const id = process.argv.slice(2);
 
-const getStatus = (jobId) => {
+const getStatus = async (jobId) => {
+  console.log(jobId);
   const options = {
     method: 'GET',
     url: `https://${domain}/api/v2/jobs/${jobId}`,
@@ -18,13 +19,17 @@ const getStatus = (jobId) => {
     },
   };
 
-  console.log(id);
+  let status = {};
 
-  axios.request(options).then((response) => {
-    console.log(response.data);
+  await axios.request(options).then((response) => {
+    // console.log(response.data);
+    status = response.data;
   }).catch((error) => {
     console.error(error);
   });
+
+  // console.log('status', status);
+  return status;
 };
 
 module.exports = getStatus;
