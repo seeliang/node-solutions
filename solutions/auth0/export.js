@@ -1,35 +1,34 @@
 const axios = require('axios').default;
 const https = require('https');
 const fs = require('fs');
-const cred = require('./credentials');
+const getCred = require('./getCred');
 const getStatus = require('./checkJob');
-
-const {
-  domain, token, connectionId,
-} = cred;
-
-const callHeader = {
-  authorization: `Bearer ${token}`,
-  'content-type': 'application/json',
-};
-
-
-const options = {
-  method: 'POST',
-  url: `https://${domain}/api/v2/jobs/users-exports`,
-  headers: callHeader,
-  data: {
-    connection_id: connectionId,
-    format: 'json',
-    fields: [{ name: 'email' }],
-  },
-};
 
 const sleep = (ms) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
 
 const getUrl = async (cb) => {
+  const {
+    domain, token, connectionId,
+  } = await getCred();
+
+  const callHeader = {
+    authorization: `Bearer ${token}`,
+    'content-type': 'application/json',
+  };
+
+
+  const options = {
+    method: 'POST',
+    url: `https://${domain}/api/v2/jobs/users-exports`,
+    headers: callHeader,
+    data: {
+      connection_id: connectionId,
+      format: 'json',
+      fields: [{ name: 'email' }],
+    },
+  };
   const data = await axios.request(options).then((response) => {
     console.log('could access');
     return response.data;

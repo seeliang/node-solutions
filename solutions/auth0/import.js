@@ -1,15 +1,14 @@
 const axios = require('axios').default;
 const FormData = require('form-data');
 const fs = require('fs');
-const cred = require('./credentials');
-
-const {
-  domain, token, file, connectionId,
-} = cred;
+const getCred = require('./getCred');
 
 const script = async () => {
   const formData = new FormData();
-  formData.append('connection_id', connectionId); // Replace with correct connection ID
+  const {
+    domain, token, file, connectionId,
+  } = await getCred();
+  formData.append('connection_id', connectionId);
   formData.append('users', fs.createReadStream(file));
 
   try {

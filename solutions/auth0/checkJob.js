@@ -1,15 +1,13 @@
 const axios = require('axios').default;
-
-const cred = require('./credentials');
-
-const {
-  domain, token,
-} = cred;
+const getCred = require('./getCred');
 
 const id = process.argv.slice(2);
 
 const getStatus = async (jobId) => {
-  console.log(jobId);
+  // console.log(jobId);
+  const {
+    domain, token,
+  } = await getCred();
   const options = {
     method: 'GET',
     url: `https://${domain}/api/v2/jobs/${jobId}`,
@@ -28,7 +26,7 @@ const getStatus = async (jobId) => {
     console.error(error);
   });
 
-  // console.log('status', status);
+  console.log('status', status);
   return status;
 };
 
