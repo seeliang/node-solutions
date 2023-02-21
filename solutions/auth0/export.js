@@ -1,28 +1,63 @@
 const axios = require('axios').default;
+const https = require('https');
+const fs = require('fs');
 const cred = require('./credentials');
+const getStatus = require('./checkJob');
 
 const {
   domain, token, connectionId,
 } = cred;
 
+const callHeader = {
+  authorization: `Bearer ${token}`,
+  'content-type': 'application/json',
+};
+
 
 const options = {
   method: 'POST',
   url: `https://${domain}/api/v2/jobs/users-exports`,
-  headers: {
-    authorization: `Bearer ${token}`,
-    'content-type': 'application/json',
-  },
+  headers: callHeader,
   data: {
     connection_id: connectionId,
     format: 'json',
-    limit: 300,
-    fields: [{ name: 'email' }, { name: 'identities[0].connection', export_as: 'provider' }],
+    fields: [{ name: 'email' }],
   },
 };
 
-axios.request(options).then((response) => {
-  console.log(response.data);
-}).catch((error) => {
-  console.error(error);
+const sleep = (ms) => new Promise((resolve) => {
+  setTimeout(resolve, ms);
 });
+
+const getUrl = async (cb) => {
+  const data = await axios.request(options).then((response) => {
+    console.log('could access');
+    return response.data;
+  }).catch((error) => {
+    console.log('has error');
+    console.error(error);
+  });
+  if (data && data.id) {
+    // console.log('job id', data.id);
+    await sleep(3000);
+    const jobStatus = await getStatus(data.id);
+    const { location } = jobStatus;
+    console.log(location);
+    if (cb) {
+      cb(location);
+    }
+  }
+};
+const download = (url) => {
+  const file = fs.createWriteStream('export.json.gz');
+  https.get(url, (response) => {
+    response.pipe(file);
+    // after download completed close filestream
+    file.on('finish', () => {
+      file.close();
+      console.log('Download Completed');
+    });
+  });
+};
+
+getUrl(download);
