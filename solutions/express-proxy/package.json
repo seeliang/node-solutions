@@ -1,0 +1,29 @@
+{
+  "name": "express-proxy",
+  "version": "1.0.0",
+  "description": "express proxy",
+  "main": "api.js",
+  "scripts": {
+    "start": "nodemon node api.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "stage": "node api.js"
+  },
+  "repository": "git@github.com:seeliang/node-playground/tree/master/node-express",
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "sihuiliang hi@sihuiliang.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seeliang/node-express/issues"
+  },
+  "homepage": "https://github.com/seeliang/node-express#readme",
+  "dependencies": {
+    "express": "^4",
+    "http-proxy": "^1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
