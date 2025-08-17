@@ -1,0 +1,24 @@
+{
+  "name": "nextjs-sample",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 4321",
+    "build": "next build",
+    "build-static": "next build && next export",
+    "start": "next start -p 4321",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "eslint-config-next": "^13.0.0",
+    "next": "^13.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint": "7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-next": "11.0.1",
+    "eslint-plugin-react": "^7.24.0"
+  }
+}
