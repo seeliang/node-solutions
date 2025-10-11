@@ -7,11 +7,17 @@ const path = require('path');
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    // Replace 'https://example.com' with the target website
-    await page.goto('https://gumtree.com.au/');
+    const domians = 'https://gumtree.com.au/';
 
-    // Retrieve cookies
-    const cookies = await page.cookies();
+    // Replace 'https://example.com' with the target website
+    await page.goto(domians, { waitUntil: 'networkidle2' });
+
+    // Allow some time for third-party scripts to load and set cookies
+    await new Promise((resolve) => setTimeout(resolve, 20000));
+
+    // Use the DevTools protocol to get all browser cookies
+    const client = await page.target().createCDPSession();
+    const { cookies } = await client.send('Network.getAllCookies');
 
     if (cookies && cookies.length > 0) {
         try {
@@ -21,7 +27,7 @@ const path = require('path');
             }
             const parser = new Parser();
             const csv = parser.parse(cookies);
-            fs.writeFileSync(path.join(reportsDir, 'cookies.csv'), csv);
+            fs.writeFileSync(path.join(reportsDir, `${domians}-cookies.csv`), csv);
             console.log('Successfully saved cookies to reports/cookies.csv');
         } catch (err) {
             console.error('Error writing to CSV file', err);
