@@ -4,15 +4,36 @@ const fs = require('fs');
 const path = require('path');
 
 (async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: false }); // Run in headful mode to observe
     const page = await browser.newPage();
 
-    const domians = 'https://gumtree.com.au/';
+    const targetUrl = 'https://gumtree.com.au/';
 
-    // Replace 'https://example.com' with the target website
-    await page.goto(domians, { waitUntil: 'networkidle2' });
+    await page.goto(targetUrl, { waitUntil: 'networkidle2' });
 
-    // Allow some time for third-party scripts to load and set cookies
+    console.log('Page loaded. Simulating user scroll...');
+
+    // Simulate scrolling down the page to trigger dynamic content/scripts
+    await page.evaluate(async () => {
+        await new Promise((resolve) => {
+            let totalHeight = 0;
+            const distance = 100;
+            const timer = setInterval(() => {
+                const { scrollHeight } = document.body;
+                window.scrollBy(0, distance);
+                totalHeight += distance;
+
+                if (totalHeight >= scrollHeight) {
+                    clearInterval(timer);
+                    resolve();
+                }
+            }, 100);
+        });
+    });
+
+    console.log('Scrolling finished. Waiting for scripts to load...');
+
+    // Allow some time for third-party scripts to load AFTER interaction
     await new Promise((resolve) => setTimeout(resolve, 20000));
 
     // Use the DevTools protocol to get all browser cookies
@@ -25,10 +46,11 @@ const path = require('path');
             if (!fs.existsSync(reportsDir)) {
                 fs.mkdirSync(reportsDir, { recursive: true });
             }
+            const sanitizedFilename = new URL(targetUrl).hostname;
             const parser = new Parser();
             const csv = parser.parse(cookies);
-            fs.writeFileSync(path.join(reportsDir, `${domians}-cookies.csv`), csv);
-            console.log('Successfully saved cookies to reports/cookies.csv');
+            fs.writeFileSync(path.join(reportsDir, `${sanitizedFilename}-cookies.csv`), csv);
+            console.log(`Successfully saved cookies to reports/${sanitizedFilename}-cookies.csv`);
         } catch (err) {
             console.error('Error writing to CSV file', err);
         }
