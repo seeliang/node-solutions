@@ -6,7 +6,7 @@
   "dependencies": {
     "minimist": "^1.2.0"
   },
-  "scripts":{
+  "scripts": {
     "test": "node index.js -t 3 -d 5 -r https://www.google.com"
   }
 }
