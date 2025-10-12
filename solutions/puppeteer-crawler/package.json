@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node src/index.js"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "dependencies": {
     "json2csv": "6.0.0-alpha.2",
     "puppeteer": "^20.0.0"

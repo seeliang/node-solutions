@@ -58,15 +58,6 @@ const path = require('path');
             const context = await browser.createIncognitoBrowserContext();
             const page = await context.newPage();
 
-            // If HTTP Basic Auth creds provided in links.json
-            if (entry.username && entry.password) {
-                try {
-                    await page.authenticate({ username: entry.username, password: entry.password });
-                } catch (_) {
-                    // ignore if not applicable
-                }
-            }
-
             // Collect third-party JS responses (exclude first-party)
             const jsResources = [];
             const respHandler = async (resp) => {
