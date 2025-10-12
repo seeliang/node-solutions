@@ -17,7 +17,41 @@ const path = require('path');
         const page = await browser.newPage();
 
         const targetUrl = 'https://gumtree.com.au/';
-        await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 90000 });
+        const { hostname: mainHost } = new URL(targetUrl);
+
+        // Collect third-party JS responses (exclude gumtree domains)
+        const jsResources = [];
+        page.on('response', async (resp) => {
+            try {
+                const url = resp.url();
+                const u = new URL(url);
+                const host = u.hostname;
+
+                // Exclude first-party (gumtree) hosts
+                const isFirstParty = host === mainHost || host.endsWith(`.${mainHost}`);
+                if (isFirstParty) return;
+
+                const headers = resp.headers();
+                const contentType = headers['content-type'] || headers['Content-Type'] || '';
+                const isScript = (resp.request().resourceType && resp.request().resourceType() === 'script')
+                    || contentType.includes('javascript')
+                    || url.endsWith('.js');
+
+                if (!isScript) return;
+
+                jsResources.push({
+                    url,
+                    hostname: host,
+                    status: resp.status(),
+                    content_type: contentType,
+                    content_length: headers['content-length'] || headers['Content-Length'] || '',
+                });
+            } catch (_) {
+                // ignore parsing errors
+            }
+        });
+
+        await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 150000 });
 
         // Simulate some user activity to trigger ad scripts
         await page.evaluate(async () => {
@@ -77,6 +111,13 @@ const path = require('path');
         const outPath = path.join(reportsDir, `${hostname}-cookies.csv`);
         fs.writeFileSync(outPath, csv);
         console.log(`Saved cookies to: ${outPath}`);
+
+        // Write third-party JS report
+        const jsParser = new Parser();
+        const jsCsv = jsParser.parse(jsResources);
+        const jsOutPath = path.join(reportsDir, `${hostname}-thirdparty-js.csv`);
+        fs.writeFileSync(jsOutPath, jsCsv);
+        console.log(`Saved third-party JS to: ${jsOutPath}`);
     } catch (err) {
         console.error('Run failed:', err);
         process.exitCode = 1; // keep non-zero exit but avoid abrupt crash
