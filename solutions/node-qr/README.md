@@ -39,7 +39,8 @@ This project is one workspace package under `solutions/node-qr`.
 
 ### `POST /qr/image`
 
-Generates a QR code image and returns raw PNG bytes in the response (`Content-Type: image/png`).
+Generates a QR code image and writes it to `generated/<hash6>.png` on the server.
+Returns JSON metadata, so `curl --output` is not required.
 
 **Body (JSON):**
 
@@ -51,19 +52,28 @@ Generates a QR code image and returns raw PNG bytes in the response (`Content-Ty
 | `org` | optional | `ORG` |
 | `url` | optional | `URL` |
 
-**Example (save PNG to file):**
+**Example:**
 
 ```bash
 curl -X POST http://localhost:8002/qr/image \
   -H "Content-Type: application/json" \
-  -d '{"email":"you@example.com","name":"Jane Doe"}' \
-  --output qrcode.png
+   -d '{"email":"you@example.com","name":"Jane Doe"}'
 ```
 
-**Example (preview headers):**
+**Response:**
+
+```json
+{
+   "hash": "<sha256-of-input-vcard>",
+   "fileName": "a1b2c3.png",
+   "path": "generated/a1b2c3.png"
+}
+```
+
+**Example (same input => same file name):**
 
 ```bash
-curl -i -X POST http://localhost:8002/qr/image \
+curl -X POST http://localhost:8002/qr/image \
   -H "Content-Type: application/json" \
   -d '{"email":"you@example.com"}'
 ```
