@@ -49,6 +49,30 @@ req.body → vcard.js → qr.js → mailTemplate.js → mailer.js → email inbo
 
 ## API
 
+### `POST /qr/image`
+
+Generate a QR code image directly and return it in the HTTP response as `image/png`.
+
+**Body (JSON):**
+
+| Field | Required | vCard mapping |
+|---|---|---|
+| `email` | ✅ | `EMAIL` |
+| `name` | optional | `FN` |
+| `phone` | optional | `TEL` |
+| `org` | optional | `ORG` |
+| `url` | optional | `URL` |
+
+**Example:**
+```bash
+curl -X POST http://localhost:8002/qr/image \
+   -H "Content-Type: application/json" \
+   -d '{"email":"you@example.com","name":"Jane Doe"}' \
+   --output qrcode.png
+```
+
+This API does not send an email; it returns the PNG file bytes directly.
+
 ### `POST /qr`
 
 **Body (JSON):**
