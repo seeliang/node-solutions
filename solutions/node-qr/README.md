@@ -1,57 +1,45 @@
 # node-qr
 
-A Node.js Express server that generates a QR code from contact information and emails it to the provided address.
+A Node.js Express API that generates a PNG QR code from contact information.
 
-## Features
+## Repo intro
 
-- Accepts an email address (required) plus any optional contact fields
-- Encodes contact data as a **vCard 3.0** QR code — scannable by phone cameras to save as a contact
-- Sends the QR code as an **inline image** in an HTML email via custom SMTP
+This project is one workspace package under `solutions/node-qr`.
 
-## Architecture
+- `app.js`: API routes and request handling
+- `index.js`: server startup
+- `vcard.js`: pure function that maps payload to vCard 3.0
+- `qr.js`: pure function that turns vCard text into a PNG data URL
+- `__tests__/`: Jest integration and unit tests
 
-Three pure functions composed by thin I/O layers:
-
-```
-req.body → vcard.js → qr.js → mailTemplate.js → mailer.js → email inbox
-```
-
-| File | Type | Responsibility |
-|---|---|---|
-| `vcard.js` | Pure | Contact object → vCard string |
-| `qr.js` | Pure | vCard string → base64 PNG data URL |
-| `mailTemplate.js` | Pure | `{ to, qrDataUrl }` → nodemailer mail options |
-| `mailer.js` | Impure | SMTP transporter, sends email |
-| `index.js` | Impure | Express server, wires all modules |
-
-## Setup
+## Develop
 
 1. Install dependencies:
    ```bash
    npm install
    ```
-
-2. Copy `.env` and fill in your SMTP credentials:
+2. Configure local env (only port is needed):
+   ```bash
+   cp .env .env.local
    ```
-   SMTP_HOST=smtp.example.com
-   SMTP_PORT=587
-   SMTP_USER=user@example.com
-   SMTP_PASS=yourpassword
-   SMTP_FROM=sender@example.com
+   or edit `.env` directly:
+   ```
    PORT=8002
    ```
-
-3. Start the server:
+3. Run locally:
    ```bash
-   npm start        # development (nodemon)
-   npm run stage    # production
+   npm start
+   ```
+4. Run tests:
+   ```bash
+   npm test
    ```
 
-## API
+## API usage
 
 ### `POST /qr/image`
 
-Generate a QR code image directly and return it in the HTTP response as `image/png`.
+Generates a QR code image and returns raw PNG bytes in the response (`Content-Type: image/png`).
 
 **Body (JSON):**
 
@@ -63,45 +51,24 @@ Generate a QR code image directly and return it in the HTTP response as `image/p
 | `org` | optional | `ORG` |
 | `url` | optional | `URL` |
 
-**Example:**
+**Example (save PNG to file):**
+
 ```bash
 curl -X POST http://localhost:8002/qr/image \
-   -H "Content-Type: application/json" \
-   -d '{"email":"you@example.com","name":"Jane Doe"}' \
-   --output qrcode.png
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","name":"Jane Doe"}' \
+  --output qrcode.png
 ```
 
-This API does not send an email; it returns the PNG file bytes directly.
+**Example (preview headers):**
 
-### `POST /qr`
-
-**Body (JSON):**
-
-| Field | Required | vCard mapping |
-|---|---|---|
-| `email` | ✅ | `EMAIL` |
-| `name` | optional | `FN` |
-| `phone` | optional | `TEL` |
-| `org` | optional | `ORG` |
-| `url` | optional | `URL` |
-
-**Minimal example:**
 ```bash
-curl -X POST http://localhost:8002/qr \
+curl -i -X POST http://localhost:8002/qr/image \
   -H "Content-Type: application/json" \
   -d '{"email":"you@example.com"}'
 ```
 
-**Extended example:**
-```bash
-curl -X POST http://localhost:8002/qr \
-  -H "Content-Type: application/json" \
-  -d '{"email":"you@example.com","name":"Jane Doe","phone":"+1234567890","org":"Acme"}'
-```
+## Notes
 
-**Response:**
-```json
-{ "message": "QR code sent to you@example.com" }
-```
-
-The recipient receives an email with the QR code image inline. Scanning it prompts the phone to save a contact with all provided fields.
+- Email delivery is intentionally removed from this package.
+- If `email` is missing, the API returns `400` with `{ "error": "email is required" }`.
