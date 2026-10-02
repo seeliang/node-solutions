@@ -1,8 +1,6 @@
-const { expect } = require('chai');
-const { describe, it } = require('mocha');
 const {
   resolver, join,
-} = require('./index');
+} = require('../resolver');
 
 const oneGame = [{ id: '1', title: 'MGS', publisherId: '3' }];
 
@@ -22,13 +20,13 @@ const Publishers = [
 
 describe('resolver', () => {
   describe('join game', () => {
-    it('should join games to publishers', () => {
+    test('should join games to publishers', () => {
       const result = join.game({
         publishers: onePublisher,
         Games: oneGame,
         resolver,
       });
-      expect(result).to.deep.equal([{
+      expect(result).toEqual([{
         id: '3',
         title: 'konami',
         games: [{
@@ -41,13 +39,13 @@ describe('resolver', () => {
   });
 
   describe('join publisher', () => {
-    it('should join publishers to games', () => {
+    test('should join publishers to games', () => {
       const result = join.publisher({
         games: oneGame,
         Publishers: onePublisher,
         resolver,
       });
-      expect(result).to.deep.equal(
+      expect(result).toEqual(
         [
           {
             id: '1',
@@ -61,7 +59,7 @@ describe('resolver', () => {
   });
 
   describe('publishersResolver', () => {
-    it('by default it should join games to publisher', () => {
+    test('by default it should join games to publisher', () => {
       const result = resolver.publishers({
         Publishers,
         Games,
@@ -69,7 +67,7 @@ describe('resolver', () => {
         join,
       })({});
 
-      expect(result).to.deep.equal([{
+      expect(result).toEqual([{
         id: '1',
         title: 'konami',
         games: [
@@ -83,14 +81,14 @@ describe('resolver', () => {
       }]);
     });
 
-    it('with correct id, it should join games to publishers', () => {
+    test('with correct id, it should join games to publishers', () => {
       const result = resolver.publishers({
         Publishers,
         Games,
         resolver,
         join,
       })({ id: '1' });
-      expect(result).to.deep.equal([{
+      expect(result).toEqual([{
         id: '1',
         title: 'konami',
         games: [{ id: '1', title: 'metal gear solid', publisherId: '1' },
@@ -98,7 +96,7 @@ describe('resolver', () => {
       }]);
     });
 
-    it.skip('with wrong id, it should notify', () => {
+    test.skip('with wrong id, it should notify', () => {
       // const result = publishersResolver({
       //   Publishers,
       //   Games,
@@ -111,7 +109,7 @@ describe('resolver', () => {
 
 
   describe('gamesResolver', () => {
-    it('by default it should join publisher to games', () => {
+    test('by default it should join publisher to games', () => {
       const result = resolver.games({
         Publishers,
         Games,
@@ -119,7 +117,7 @@ describe('resolver', () => {
         join,
       })({});
 
-      expect(result).to.deep.equal(
+      expect(result).toEqual(
         [{
           id: '1', title: 'metal gear solid', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
         }, {
@@ -130,7 +128,7 @@ describe('resolver', () => {
       );
     });
 
-    it('with correct id, it should join publishers to games', () => {
+    test('with correct id, it should join publishers to games', () => {
       const result = resolver.games({
         Publishers,
         Games,
@@ -138,14 +136,14 @@ describe('resolver', () => {
         join,
       })({ id: '1' });
 
-      expect(result).to.deep.equal(
+      expect(result).toEqual(
         [{
           id: '1', title: 'metal gear solid', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
         }],
       );
     });
 
-    it.skip('with wrong id, it should notify', () => {
+    test.skip('with wrong id, it should notify', () => {
     });
   });
 });
