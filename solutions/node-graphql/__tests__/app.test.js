@@ -6,7 +6,7 @@ const gql = (app, query, variables) => request(app)
   .post('/graphql')
   .send({ query, variables });
 
-describe('POST /graphql — integration', () => {
+describe('/graphql — integration', () => {
   let app;
 
   beforeEach(() => {
@@ -46,6 +46,24 @@ describe('POST /graphql — integration', () => {
 
     const res = await gql(app, '{ publishers(id: "3") { title } }');
     expect(res.body.data.publishers).toEqual([{ title: 'capcom' }]);
+  });
+
+  test('GET /graphql with query returns JSON', async () => {
+    const res = await request(app)
+      .get('/graphql')
+      .query({ query: '{ publishers(id: "1") { title } }' });
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/json/);
+    expect(res.body.data.publishers).toEqual([{ title: 'konami' }]);
+  });
+
+  test('GET /graphiql serves the GraphiQL page', async () => {
+    const res = await request(app).get('/graphiql');
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/html/);
+    expect(res.text).toContain('/graphql');
   });
 
   test('mutations do not leak into a new app', async () => {

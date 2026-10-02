@@ -6,7 +6,7 @@ A Node.js Express API that serves an in-memory games / publishers GraphQL schema
 
 This project is one workspace package under `solutions/node-graphql`.
 
-- `app.js`: Express app mounting the GraphQL handler (`graphql-http`)
+- `app.js`: Express app mounting the GraphQL handler (`graphql-http`) and GraphiQL (`ruru`)
 - `index.js`: server startup
 - `schema.js`: GraphQL SDL schema
 - `data/`: seed data
@@ -35,6 +35,10 @@ This project is one workspace package under `solutions/node-graphql`.
 
 ## API usage
 
+### GraphiQL
+
+Open http://localhost:4000/graphiql in a browser to explore the schema and run queries.
+
 ### `POST /graphql`
 
 **Query example:**
@@ -43,6 +47,13 @@ This project is one workspace package under `solutions/node-graphql`.
 curl -X POST http://localhost:4000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query":"{ games(id: \"1\") { id title publisher { title } } }"}'
+```
+
+**GET query example:**
+
+```bash
+curl -G http://localhost:4000/graphql \
+  --data-urlencode 'query={ publishers(id: "1") { title } }'
 ```
 
 **Mutation example:**
@@ -55,5 +66,5 @@ curl -X POST http://localhost:4000/graphql \
 
 ## Notes
 
-- `express-graphql` is deprecated; this package uses the official `graphql-http` handler, which has no built-in GraphiQL UI.
+- `express-graphql` is deprecated; this package uses the official `graphql-http` handler, which has no built-in UI, so GraphiQL is served separately by `ruru` at `/graphiql`. Keeping it off `/graphql` means `GET /graphql?query=...` still reaches the API.
 - Data lives in memory and resets on restart.

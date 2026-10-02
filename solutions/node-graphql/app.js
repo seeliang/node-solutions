@@ -1,5 +1,6 @@
 const express = require('express');
 const { createHandler } = require('graphql-http/lib/use/express');
+const { ruruHTML } = require('ruru/server');
 
 const schema = require('./schema');
 const { Games, Publishers } = require('./data');
@@ -28,6 +29,10 @@ const createRootValue = () => {
 
 const createApp = () => {
   const app = express();
+  // GraphiQL lives on its own path so GET /graphql?query=... still reaches the API
+  app.get('/graphiql', (req, res) => {
+    res.type('html').send(ruruHTML({ endpoint: '/graphql' }));
+  });
   app.all('/graphql', createHandler({ schema, rootValue: createRootValue() }));
   return app;
 };
