@@ -1,23 +1,26 @@
-// resolver
-const { Publishers, Games } = require("../data");
-
-
+// resolver: data comes from context (the store), never from require
+const mutation = require('../mutation');
 
 const Query = {
-  hi: () => "hi",
-  games: (parent, arg) => arg?.id ? Games.filter(i => i.id === arg.id) : Games, // why parent works same as arg?
-  publishers: (parent, arg) => arg?.id ? Publishers.filter(i => i.id === arg.id) : Publishers
-}
+  hi: () => 'hi',
+  games: (_, { id }, { games }) => (id ? games.filter((g) => g.id === id) : games),
+  publishers: (_, { id }, { publishers }) => (id ? publishers.filter((p) => p.id === id) : publishers),
+};
 
 const resolver = {
   Query,
   GamesTrace: {
-    publisher: (parent) => Publishers.filter(i => i.id === parent.publisherId)
+    publisher: (game, _, { publishers }) => publishers.filter((p) => p.id === game.publisherId),
   },
   PublishersTrace: {
-    games: (parent) =>
-      Games.filter(i => i.publisherId === parent.id)
-  }
+    games: (publisher, _, { games }) => games.filter((g) => g.publisherId === publisher.id),
+  },
+  Mutation: {
+    addPublisher: (_, args, { publishers }) => mutation.publisher.add(publishers)(args),
+    editPublisher: (_, args, { publishers }) => mutation.publisher.edit(publishers)(args),
+    addGame: (_, args, { games }) => mutation.game.add(games)(args),
+    editGame: (_, args, { games }) => mutation.game.edit(games)(args),
+  },
 };
 
 module.exports = {

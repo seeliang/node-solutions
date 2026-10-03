@@ -1,10 +1,4 @@
-const {
-  resolver, join,
-} = require('../resolver');
-
-const oneGame = [{ id: '1', title: 'MGS', publisherId: '3' }];
-
-const onePublisher = [{ id: '3', title: 'konami' }];
+const { resolver } = require('../resolver');
 
 const Games = [
   { id: '1', title: 'metal gear solid', publisherId: '1' },
@@ -17,133 +11,111 @@ const Publishers = [
   { id: '2', title: 'santa monica' },
 ];
 
+// resolvers are called as (parent, args, context); context is the store
+const createContext = () => ({
+  games: Games.map((game) => ({ ...game })),
+  publishers: Publishers.map((publisher) => ({ ...publisher })),
+});
 
 describe('resolver', () => {
-  describe('join game', () => {
-    test('should join games to publishers', () => {
-      const result = join.game({
-        publishers: onePublisher,
-        Games: oneGame,
-        resolver,
-      });
-      expect(result).toEqual([{
-        id: '3',
-        title: 'konami',
-        games: [{
-          id: '1',
-          title: 'MGS',
-          publisherId: '3',
-        }],
-      }]);
+  describe('Query', () => {
+    test('hi says hi', () => {
+      expect(resolver.Query.hi()).toBe('hi');
+    });
+
+    test('games returns all games without id', () => {
+      const result = resolver.Query.games(undefined, {}, createContext());
+      expect(result).toEqual(Games);
+    });
+
+    test('games filters by id', () => {
+      const result = resolver.Query.games(undefined, { id: '2' }, createContext());
+      expect(result).toEqual([Games[1]]);
+    });
+
+    test('games returns empty list for unknown id', () => {
+      const result = resolver.Query.games(undefined, { id: '9' }, createContext());
+      expect(result).toEqual([]);
+    });
+
+    test('publishers returns all publishers without id', () => {
+      const result = resolver.Query.publishers(undefined, {}, createContext());
+      expect(result).toEqual(Publishers);
+    });
+
+    test('publishers filters by id', () => {
+      const result = resolver.Query.publishers(undefined, { id: '1' }, createContext());
+      expect(result).toEqual([Publishers[0]]);
+    });
+
+    test('publishers returns empty list for unknown id', () => {
+      const result = resolver.Query.publishers(undefined, { id: '9' }, createContext());
+      expect(result).toEqual([]);
     });
   });
 
-  describe('join publisher', () => {
-    test('should join publishers to games', () => {
-      const result = join.publisher({
-        games: oneGame,
-        Publishers: onePublisher,
-        resolver,
-      });
-      expect(result).toEqual(
-        [
-          {
-            id: '1',
-            title: 'MGS',
-            publisherId: '3',
-            publisher: [{ id: '3', title: 'konami' }],
-          },
-        ],
-      );
+  describe('Games', () => {
+    test('publisher resolves the parent game\'s publisher', () => {
+      const result = resolver.GamesTrace.publisher(Games[0], {}, createContext());
+      expect(result).toEqual([Publishers[0]]);
+    });
+
+    test('publisher is empty when publisherId matches nothing', () => {
+      const orphan = { id: '9', title: 'contra', publisherId: '9' };
+      const result = resolver.GamesTrace.publisher(orphan, {}, createContext());
+      expect(result).toEqual([]);
     });
   });
 
-  describe('publishersResolver', () => {
-    test('by default it should join games to publisher', () => {
-      const result = resolver.publishers({
-        Publishers,
-        Games,
-        resolver,
-        join,
-      })({});
-
-      expect(result).toEqual([{
-        id: '1',
-        title: 'konami',
-        games: [
-          { id: '1', title: 'metal gear solid', publisherId: '1' },
-          { id: '3', title: 'winning eleven', publisherId: '1' }],
-      },
-      {
-        id: '2',
-        title: 'santa monica',
-        games: [{ id: '2', title: 'god of war', publisherId: '2' }],
-      }]);
+  describe('Publishers', () => {
+    test('games resolves the parent publisher\'s games', () => {
+      const result = resolver.PublishersTrace.games(Publishers[0], {}, createContext());
+      expect(result).toEqual([Games[0], Games[2]]);
     });
 
-    test('with correct id, it should join games to publishers', () => {
-      const result = resolver.publishers({
-        Publishers,
-        Games,
-        resolver,
-        join,
-      })({ id: '1' });
-      expect(result).toEqual([{
-        id: '1',
-        title: 'konami',
-        games: [{ id: '1', title: 'metal gear solid', publisherId: '1' },
-          { id: '3', title: 'winning eleven', publisherId: '1' }],
-      }]);
-    });
-
-    test.skip('with wrong id, it should notify', () => {
-      // const result = publishersResolver({
-      //   Publishers,
-      //   Games,
-      //   gamesResolver,
-      //   joinGame,
-      // })({ id: '4' });
-      // chai https://stackoverflow.com/questions/14966821/testing-for-errors-thrown-in-mocha
+    test('games is empty for a publisher with no games', () => {
+      const capcom = { id: '3', title: 'capcom' };
+      const result = resolver.PublishersTrace.games(capcom, {}, createContext());
+      expect(result).toEqual([]);
     });
   });
 
+  // mutation logic is covered in mutation.test.js; these check the
+  // resolvers write to the store passed in as context
+  describe('Mutation', () => {
+    test('addPublisher writes to context.publishers', () => {
+      const context = createContext();
+      const result = resolver.Mutation.addPublisher(undefined, { input: { title: 'capcom' } }, context);
 
-  describe('gamesResolver', () => {
-    test('by default it should join publisher to games', () => {
-      const result = resolver.games({
-        Publishers,
-        Games,
-        resolver,
-        join,
-      })({});
-
-      expect(result).toEqual(
-        [{
-          id: '1', title: 'metal gear solid', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
-        }, {
-          id: '2', title: 'god of war', publisherId: '2', publisher: [{ id: '2', title: 'santa monica' }],
-        }, {
-          id: '3', title: 'winning eleven', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
-        }],
-      );
+      expect(result).toEqual([{ id: '3', title: 'capcom' }]);
+      expect(context.publishers).toContainEqual({ id: '3', title: 'capcom' });
     });
 
-    test('with correct id, it should join publishers to games', () => {
-      const result = resolver.games({
-        Publishers,
-        Games,
-        resolver,
-        join,
-      })({ id: '1' });
+    test('editPublisher writes to context.publishers', () => {
+      const context = createContext();
+      resolver.Mutation.editPublisher(undefined, { input: { id: '2', title: 'sony' } }, context);
 
-      expect(result).toEqual(
-        [{
-          id: '1', title: 'metal gear solid', publisherId: '1', publisher: [{ id: '1', title: 'konami' }],
-        }],
-      );
+      expect(context.publishers[1]).toEqual({ id: '2', title: 'sony' });
     });
 
-    test.skip('with wrong id, it should notify', () => {
+    test('addGame writes to context.games', () => {
+      const context = createContext();
+      const result = resolver.Mutation.addGame(undefined, { input: { title: 'contra', publisherId: '1' } }, context);
+
+      expect(result).toEqual([{ id: '4', title: 'contra', publisherId: '1' }]);
+      expect(context.games).toHaveLength(4);
+    });
+
+    test('editGame writes to context.games', () => {
+      const context = createContext();
+      resolver.Mutation.editGame(undefined, { input: { id: '2', title: 'god of war ii', publisherId: '2' } }, context);
+
+      expect(context.games[1]).toEqual({ id: '2', title: 'god of war ii', publisherId: '2' });
+    });
+
+    test('mutations do not touch the fixtures', () => {
+      resolver.Mutation.addPublisher(undefined, { input: { title: 'capcom' } }, createContext());
+      expect(Publishers).toHaveLength(2);
     });
   });
 });
