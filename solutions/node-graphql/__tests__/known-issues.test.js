@@ -26,7 +26,7 @@ describe('known issues', () => {
   // 1. Nested resolution stops after one level: join.publisher calls the
   //    publishers resolver without Games/join, so publishers inside a game
   //    come back without their games.
-  test.failing('1. nesting works deeper than one level', async () => {
+  test('1. nesting works deeper than one level', async () => {
     const res = await gql(createApp(), '{ games(id: "1") { publisher { games { title } } } }');
 
     expect(res.body.data.games).toEqual([

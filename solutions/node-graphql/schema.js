@@ -1,6 +1,4 @@
-const { buildSchema } = require('graphql');
-
-const schema = buildSchema(`
+const typeDefs = `#graphql
   type Query {
     hi: String
     games(id: ID, publisherId: ID): [Games]
@@ -8,15 +6,15 @@ const schema = buildSchema(`
   }
 
   type Games {
-    id: ID
-    title: String
-    publisher: [Publishers]
+    id: ID!
+    title: String!
+    publisher: [Publishers]!
   }
 
   type Publishers {
-    id: ID
-    title: String
-    games: [Games]
+    id: ID!
+    title: String!
+    games: [Games!]
   }
 
   input AddPublisherInput {
@@ -45,6 +43,6 @@ const schema = buildSchema(`
     addGame(input: addGameInput): [Games]
     editGame(input: editGameInput): [Games]
   }
-`);
+`;
 
-module.exports = schema;
+module.exports = typeDefs;
