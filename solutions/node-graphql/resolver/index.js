@@ -3,7 +3,16 @@ const mutation = require('../mutation');
 
 const Query = {
   hi: () => 'hi',
-  games: (_, { id }, { games }) => (id ? games.filter((g) => g.id === id) : games),
+  games: (_, { id, publisherId }, { games }) => {
+    let filteredGames = games;
+    if (id) {
+      filteredGames = filteredGames.filter((g) => g.id === id);
+    }
+    if (publisherId) {
+      filteredGames = filteredGames.filter((g) => g.publisherId === publisherId);
+    }
+    return filteredGames;
+  },
   publishers: (_, { id }, { publishers }) => (id ? publishers.filter((p) => p.id === id) : publishers),
 };
 
