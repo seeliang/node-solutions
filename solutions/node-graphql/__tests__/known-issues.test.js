@@ -30,8 +30,20 @@ const QUERIES = {
   byPublisher: '{ games(publisherId: "2") { title } }',
   idAndPublisher: '{ games(id: "1", publisherId: "2") { title } }',
   addGameUnknownPublisher:
-    'mutation { addGame(input: { title: "contra", publisherId: "9" }) { id } }',
+    'mutation { addGame(input: { title: "contra", publisherId: "9" }) { game { id } userErrors { field } } }',
   gamesWithPublishers: '{ games { title publisher { title } } }',
+  renamePublisher:
+    'mutation { editPublisher(input: { id: "1", title: "KONAMI" }) { publisher { title } } }',
+  // mutation fields run in order, sharing one request's loaders
+  renameBetweenLoads: `mutation {
+    before: editGame(input: { id: "1", title: "metal gear solid", publisherId: "1" }) {
+      game { publisher { title } }
+    }
+    rename: editPublisher(input: { id: "1", title: "KONAMI" }) { publisher { title } }
+    after: editGame(input: { id: "3", title: "winning eleven", publisherId: "1" }) {
+      game { publisher { title } }
+    }
+  }`,
 };
 
 describe('open bugs', () => {
@@ -102,6 +114,34 @@ describe('open bugs', () => {
     await gql(createApp(store), QUERIES.gamesWithPublishers);
 
     expect(counter.reads).toBe(1);
+  });
+
+  // 8. Loaders are created once per app, so their cache outlives the
+  //    request: after a rename, later requests still get the cached title.
+  //    Create loaders per request with the function form of `context`.
+  test.skip('8. a later request sees a renamed publisher', async () => {
+    const app = createApp();
+    await gql(app, QUERIES.publisherOfGame); // caches publisher 1
+
+    await gql(app, QUERIES.renamePublisher);
+    const res = await gql(app, QUERIES.publisherOfGame);
+
+    expect(res.body.data.games).toEqual([{ publisher: { title: 'KONAMI' } }]);
+  });
+
+  // 9. Even per-request loaders cache within the request. Mutation fields
+  //    run in order, so a field that loads publisher 1 before a rename
+  //    leaves the old title cached for fields after it. A mutation that
+  //    writes should clear what it changed, e.g.
+  //    loaders.publishersLoader.clear(id).
+  test.skip('9. a rename is visible to later fields in the same request', async () => {
+    const res = await gql(createApp(), QUERIES.renameBetweenLoads);
+
+    expect(res.body.data).toEqual({
+      before: { game: { publisher: { title: 'konami' } } },
+      rename: { publisher: { title: 'KONAMI' } },
+      after: { game: { publisher: { title: 'KONAMI' } } },
+    });
   });
 });
 

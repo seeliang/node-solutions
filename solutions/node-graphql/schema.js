@@ -63,10 +63,10 @@ const typeDefs = `#graphql
   }
 
   type Mutation {
-    addPublisher(input: AddPublisherInput!): AddPublisherPayload!
-    editPublisher(input: EditPublisherInput!): EditPublisherPayload!
-    addGame(input: AddGameInput!): AddGamePayload!
-    editGame(input: EditGameInput!): EditGamePayload!
+    addPublisher(input: AddPublisherInput): AddPublisherPayload!
+    editPublisher(input: EditPublisherInput): EditPublisherPayload!
+    addGame(input: AddGameInput): AddGamePayload!
+    editGame(input: EditGameInput): EditGamePayload!
   }
 `;
 

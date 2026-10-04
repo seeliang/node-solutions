@@ -9,6 +9,7 @@ const addGame = ({ publishers, games }) => ({ input }) => {
       userErrors: [{ field: ['input', 'publisherId'], message: `Publisher with id ${publisherId} not found. No changes made.` }],
     };
   }
+  console.log(`Adding game with id ${id}, title ${title}, publisherId ${publisherId}`);
   games.push({ id, title, publisherId }); // mutation
   const i = games.length - 1;
   return {
