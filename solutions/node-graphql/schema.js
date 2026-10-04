@@ -1,20 +1,20 @@
 const typeDefs = `#graphql
   type Query {
     hi: String
-    games(id: ID, publisherId: ID): [Games]
-    publishers(id: ID): [Publishers]
+    games(id: ID, publisherId: ID): [Games!]!
+    publishers(id: ID): [Publishers!]!
   }
 
   type Games {
     id: ID!
     title: String!
-    publisher: Publishers!
+    publisher: Publishers
   }
 
   type Publishers {
     id: ID!
     title: String!
-    games: [Games!]
+    games: [Games!]!
   }
 
   input AddPublisherInput {
@@ -26,22 +26,22 @@ const typeDefs = `#graphql
     title: String!
   }
 
-  input addGameInput {
+  input AddGameInput {
     title: String!
     publisherId: ID!
   }
 
-  input editGameInput {
+  input EditGameInput {
     id: ID!
     title: String!
     publisherId: ID!
   }
 
   type Mutation {
-    addPublisher(input: AddPublisherInput): [Publishers]
-    editPublisher(input: EditPublisherInput): [Publishers]
-    addGame(input: addGameInput): [Games]
-    editGame(input: editGameInput): [Games]
+    addPublisher(input: AddPublisherInput!): [Publishers]
+    editPublisher(input: EditPublisherInput!): [Publishers]
+    addGame(input: AddGameInput!): [Games]
+    editGame(input: EditGameInput!): [Games]
   }
 `;
 

@@ -21,7 +21,7 @@ describe('/graphql — integration', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data.games).toEqual([
-      { id: '1', title: 'metal gear solid', publisher: [{ title: 'konami' }] },
+      { id: '1', title: 'metal gear solid', publisher: { title: 'konami' } },
     ]);
   });
 
@@ -37,7 +37,7 @@ describe('/graphql — integration', () => {
   test('addPublisher mutation persists within the app', async () => {
     const add = await gql(
       app,
-      'mutation ($input: AddPublisherInput) { addPublisher(input: $input) { id title } }',
+      'mutation ($input: AddPublisherInput!) { addPublisher(input: $input) { id title } }',
       { input: { title: 'capcom' } },
     );
     expect(add.body.data.addPublisher).toEqual([{ id: '3', title: 'capcom' }]);
@@ -90,9 +90,9 @@ describe('/graphql — regressions', () => {
     expect(res.body.errors).toBeUndefined();
     expect(res.body.data.games).toEqual([
       {
-        publisher: [{
+        publisher: {
           games: [{ title: 'metal gear solid' }, { title: 'winning eleven' }],
-        }],
+        },
       },
     ]);
   });
