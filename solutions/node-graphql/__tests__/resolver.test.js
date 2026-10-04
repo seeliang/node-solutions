@@ -50,13 +50,13 @@ describe('resolver', () => {
   describe('Games', () => {
     test('publisher resolves the parent game\'s publisher', async () => {
       const result = await resolver.GamesTrace.publisher(Games[0], {}, createContext());
-      expect(result).toEqual([Publishers[0]]);
+      expect(result).toEqual(Publishers[0]);
     });
 
     test('publisher is empty when publisherId matches nothing', async () => {
       const orphan = { id: '9', title: 'contra', publisherId: '9' };
       const result = await resolver.GamesTrace.publisher(orphan, {}, createContext());
-      expect(result).toEqual([]);
+      expect(result).toEqual(null);
     });
   });
 

@@ -37,7 +37,7 @@ const QUERIES = {
 describe('open bugs', () => {
   // 3. A game has exactly one publisher, but the schema types it as
   //    `[Publishers]!` and the resolver uses `filter`, which returns a list.
-  test.skip('3. game.publisher is a single object, not a list', async () => {
+  test('3. game.publisher is a single object, not a list', async () => {
     const res = await gql(createApp(), QUERIES.publisherOfGame);
 
     expect(res.body.data.games).toEqual([{ publisher: { title: 'konami' } }]);

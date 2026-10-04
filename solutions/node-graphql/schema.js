@@ -8,7 +8,7 @@ const typeDefs = `#graphql
   type Games {
     id: ID!
     title: String!
-    publisher: [Publishers]!
+    publisher: Publishers!
   }
 
   type Publishers {

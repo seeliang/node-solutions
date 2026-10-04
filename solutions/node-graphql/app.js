@@ -22,7 +22,7 @@ const createLoaders = (store) => {
   return {
     publishersLoader: new DataLoader(async (gameIds) => {
       const publishers = await store.publishers.filter((p) => gameIds.includes(p.id));
-      return gameIds.map((id) => publishers.filter((p) => p.id === id));
+      return gameIds.map((id) => publishers.find((p) => p.id === id) || null);
     }),
     gamesLoader: new DataLoader(async (publisherIds) => {
       const games = await store.games.filter((g) => publisherIds.includes(g.publisherId));
