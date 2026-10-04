@@ -1,75 +1,62 @@
-// Known issues with the current buildSchema + rootValue resolver setup.
+// Open bugs with the resolver-map setup (makeExecutableSchema + graphql-http).
 //
-// Each test asserts the behaviour we WANT. They are marked `test.failing`,
-// so they pass while the bug exists. Once a fix lands, jest reports
-// "Failing test passed even though it was expected to fail" — flip that
-// test to `test` and it becomes a regression test.
+// Red until fixed. Each test asserts the behaviour we WANT, so `yarn test`
+// fails once per open bug. Fix them one at a time: each fix should turn
+// exactly one test green. Then move that test to the regressions block in
+// app.test.js.
 //
-// 6. resolver/join wiring is not tested here: `resolver` and `join` are
-//    injected into each other only because buildSchema has no per-type
-//    resolvers, and `gamesResolver` checks the module-level
-//    `publishersResolver` instead of the injected one. It is structural
-//    and changes no output; per-type resolvers remove it entirely.
-
-const request = require('supertest');
+// Rules learned from the resolver-map refactor:
+// - Go through /graphql (or the public mutation module), never internals.
+//   Two earlier tests called `join` and `resolver.games`; the refactor
+//   removed both and the tests broke for a reason unrelated to the bugs.
+// - A red test can mean "bug still here" or "test is broken", so every
+//   query used below also has a plain test in "the queries still run".
+//   If a guard goes red, fix the guard first.
+//
+// Fixed and moved to app.test.js as regression tests:
+// 1. nesting deeper than one level
+// 2. publishers looked up even when the query never asks for them
+//
+// If this branch is ever merged with bugs still open, mark those tests
+// `test.failing` so the main build stays green.
 
 const { createApp } = require('../app');
-const { resolver, join } = require('../resolver');
+const { createStore } = require('../store');
 const mutation = require('../mutation');
-const { Games, Publishers } = require('../data');
+const { gql, countPublisherReads } = require('../test-helpers');
 
-const gql = (app, query) => request(app).post('/graphql').send({ query });
+const QUERIES = {
+  publisherOfGame: '{ games(id: "1") { publisher { title } } }',
+  byPublisher: '{ games(publisherId: "2") { title } }',
+  idAndPublisher: '{ games(id: "1", publisherId: "2") { title } }',
+  addGameUnknownPublisher:
+    'mutation { addGame(input: { title: "contra", publisherId: "9" }) { id } }',
+  gamesWithPublishers: '{ games { title publisher { title } } }',
+};
 
-const copy = (list) => list.map((item) => ({ ...item }));
-
-describe('known issues', () => {
-  // 1. Nested resolution stops after one level: join.publisher calls the
-  //    publishers resolver without Games/join, so publishers inside a game
-  //    come back without their games.
-  test('1. nesting works deeper than one level', async () => {
-    const res = await gql(createApp(), '{ games(id: "1") { publisher { games { title } } } }');
-
-    expect(res.body.data.games).toEqual([
-      {
-        publisher: [{
-          games: [{ title: 'metal gear solid' }, { title: 'winning eleven' }],
-        }],
-      },
-    ]);
-  });
-
-  // 2. Joins are computed before GraphQL knows which fields were asked
-  //    for, so publishers are looked up even when the query never asks.
-  describe('2. eager joins', () => {
-    afterEach(() => jest.restoreAllMocks());
-
-    test.failing('does not join publishers when only titles are requested', async () => {
-      const spy = jest.spyOn(join, 'publisher');
-
-      await gql(createApp(), '{ games { title } }');
-
-      expect(spy).not.toHaveBeenCalled();
-    });
-  });
-
-  // 3. A game has exactly one publisher, but the schema types it as a
-  //    list because the join reuses a resolver that returns arrays.
-  test.failing('3. game.publisher is a single object, not a list', async () => {
-    const res = await gql(createApp(), '{ games(id: "1") { publisher { title } } }');
+describe('open bugs', () => {
+  // 3. A game has exactly one publisher, but the schema types it as
+  //    `[Publishers]!` and the resolver uses `filter`, which returns a list.
+  test('3. game.publisher is a single object, not a list', async () => {
+    const res = await gql(createApp(), QUERIES.publisherOfGame);
 
     expect(res.body.data.games).toEqual([{ publisher: { title: 'konami' } }]);
   });
 
-  // 4. The publisherId filter replaces the id result instead of narrowing
-  //    it, so passing both arguments ignores id.
-  test.failing('4. id and publisherId together narrow the result', () => {
-    const result = resolver.games({ Games: copy(Games) })({ id: '1', publisherId: '1' });
+  // 4. Query.games filters by `id` only, so `publisherId` is ignored: it
+  //    neither filters on its own nor narrows `id`.
+  test('4. publisherId filters, and narrows id', async () => {
+    const app = createApp();
+    const byPublisher = await gql(app, QUERIES.byPublisher);
+    const both = await gql(app, QUERIES.idAndPublisher);
 
-    expect(result).toEqual([{ id: '1', title: 'metal gear solid', publisherId: '1' }]);
+    expect(byPublisher.body.data.games).toEqual([{ title: 'god of war' }]);
+    expect(both.body.data.games).toEqual([]); // game 1 belongs to publisher 1
   });
 
   // 5. edit finds the index with reduce(..., 0), so an unknown id falls
-  //    back to index 0 and overwrites the first record.
+  //    back to index 0 and overwrites the first record. Tested through the
+  //    mutation module until mutations return payloads with userErrors.
   describe('5. editing an unknown id', () => {
     const editUnknown = (edit) => {
       try {
@@ -79,20 +66,53 @@ describe('known issues', () => {
       }
     };
 
-    test.failing('leaves publishers untouched', () => {
-      const publishers = copy(Publishers);
+    test('leaves publishers untouched', () => {
+      const store = createStore();
 
-      editUnknown(() => mutation.publisher.edit(publishers)({ input: { id: '9', title: 'x' } }));
+      editUnknown(() => mutation.publisher.edit(store.publishers)({ input: { id: '9', title: 'x' } }));
 
-      expect(publishers).toEqual(Publishers);
+      expect(store.publishers).toEqual(createStore().publishers);
     });
 
-    test.failing('leaves games untouched', () => {
-      const games = copy(Games);
+    test('leaves games untouched', () => {
+      const store = createStore();
 
-      editUnknown(() => mutation.game.edit(games)({ input: { id: '9', title: 'x', publisherId: '1' } }));
+      editUnknown(() => mutation.game.edit(store.games)({ input: { id: '9', title: 'x', publisherId: '1' } }));
 
-      expect(games).toEqual(Games);
+      expect(store.games).toEqual(createStore().games);
     });
+  });
+
+  // 6. addGame accepts a publisherId that doesn't exist, creating a game
+  //    whose publisher resolves to nothing. P2's userErrors should reject it.
+  test('6. addGame rejects an unknown publisherId', async () => {
+    const store = createStore();
+
+    await gql(createApp(store), QUERIES.addGameUnknownPublisher);
+
+    expect(store.games).toHaveLength(createStore().games.length);
+  });
+
+  // 7. N+1: Games.publisher runs once per game, and each run reads the
+  //    publishers. A per-request DataLoader should batch them into one read.
+  test('7. publishers are read once for a list of games', async () => {
+    const store = createStore();
+    const counter = countPublisherReads(store);
+
+    await gql(createApp(store), QUERIES.gamesWithPublishers);
+
+    expect(counter.reads).toBe(1);
+  });
+});
+
+// Guards for the open bugs above: each bug test should fail on its
+// assertion, not because its query errors. If a guard fails, fix it first.
+describe('open bugs: the queries still run', () => {
+  test.each(Object.entries(QUERIES))('%s returns data without errors', async (name, query) => {
+    const res = await gql(createApp(), query);
+
+    expect(res.status).toBe(200);
+    expect(res.body.errors).toBeUndefined();
+    expect(res.body.data).toBeDefined();
   });
 });

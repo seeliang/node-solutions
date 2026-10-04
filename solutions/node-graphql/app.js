@@ -19,9 +19,9 @@ const resolvers = {
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-const createApp = () => {
+// tests may pass their own store to observe how resolvers use it
+const createApp = (store = createStore()) => {
   const app = express();
-  const store = createStore();
   // GraphiQL lives on its own path so GET /graphql?query=... still reaches the API
 
   app.get('/graphiql', (req, res) => {

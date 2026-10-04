@@ -1,21 +1,10 @@
 const { resolver } = require('../resolver');
+const { createStore } = require('../store');
+const { Games, Publishers } = require('../data');
 
-const Games = [
-  { id: '1', title: 'metal gear solid', publisherId: '1' },
-  { id: '2', title: 'god of war', publisherId: '2' },
-  { id: '3', title: 'winning eleven', publisherId: '1' },
-];
-
-const Publishers = [
-  { id: '1', title: 'konami' },
-  { id: '2', title: 'santa monica' },
-];
-
-// resolvers are called as (parent, args, context); context is the store
-const createContext = () => ({
-  games: Games.map((game) => ({ ...game })),
-  publishers: Publishers.map((publisher) => ({ ...publisher })),
-});
+// resolvers are called as (parent, args, context); context is the store,
+// a fresh copy of the seed data each time
+const createContext = createStore;
 
 describe('resolver', () => {
   describe('Query', () => {
