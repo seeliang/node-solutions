@@ -28,7 +28,7 @@ const resolver = {
   Mutation: {
     addPublisher: (_, args, { store: { publishers } }) => mutation.publisher.add(publishers)(args),
     editPublisher: (_, args, { store: { publishers } }) => mutation.publisher.edit(publishers)(args),
-    addGame: (_, args, { store: { games } }) => mutation.game.add(games)(args),
+    addGame: (_, args, { store: { publishers, games } }) => mutation.game.add({ publishers, games })(args),
     editGame: (_, args, { store: { games } }) => mutation.game.edit(games)(args),
   },
 };

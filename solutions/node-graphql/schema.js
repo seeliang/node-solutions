@@ -37,11 +37,36 @@ const typeDefs = `#graphql
     publisherId: ID!
   }
 
+  type UserError {
+    field: [String!]
+    message: String!
+  }
+
+  type AddPublisherPayload {
+    publisher: Publishers
+    userErrors: [UserError!]!
+  }
+
+  type EditPublisherPayload {
+    publisher: Publishers
+    userErrors: [UserError!]!
+  }
+
+  type AddGamePayload {
+    game: Games
+    userErrors: [UserError!]!
+  }
+
+  type EditGamePayload {
+    game: Games
+    userErrors: [UserError!]!
+  }
+
   type Mutation {
-    addPublisher(input: AddPublisherInput!): [Publishers]
-    editPublisher(input: EditPublisherInput!): [Publishers]
-    addGame(input: AddGameInput!): [Games]
-    editGame(input: EditGameInput!): [Games]
+    addPublisher(input: AddPublisherInput!): AddPublisherPayload!
+    editPublisher(input: EditPublisherInput!): EditPublisherPayload!
+    addGame(input: AddGameInput!): AddGamePayload!
+    editGame(input: EditGameInput!): EditGamePayload!
   }
 `;
 
