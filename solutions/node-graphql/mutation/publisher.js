@@ -3,15 +3,30 @@ const addPublisher = p => ({ input }) => { // eslint-disable-line no-shadow
   const id = `${p.length + 1}`;
   p.push({ id, title }); // mutation
   const i = p.length - 1;
-  return [p[i]];
+  const result = {
+    publisher: p[i],
+    userErrors: [],
+  }
+  return result;
 };
 
 
-const editPublisher = p => ({ input }) => {
+const editPublisher = ({ publishers, publishersLoader }) => ({ input }) => {
   const { id, title } = input;
-  const keyIndex = p.reduce((r, s, index) => (s.id === id ? index : r), 0);
-  p.splice(keyIndex, 1, { id, title }); // mutation
-  return [p[keyIndex]];
+  if (!publishers.some((s) => s.id === id)) {
+    const result = {
+      publisher: null,
+      userErrors: [{ field: ['input', 'id'], message: `Publisher with id ${id} not found. No changes made.` }],
+    }
+    return result;
+  }
+  const keyIndex = publishers.reduce((r, s, index) => (s.id === id ? index : r), 0);
+  publishers.splice(keyIndex, 1, { id, title }); // mutation
+  publishersLoader.clear(id);
+  return {
+    publisher: p[keyIndex],
+    userErrors: [],
+  }
 };
 
 module.exports = {

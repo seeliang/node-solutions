@@ -1,67 +1,38 @@
-// resolver
+// resolver: data comes from context (the store), never from require
+const mutation = require('../mutation');
 
-const join = {
-  game: ({ publishers, Games, resolver }) => (
-    publishers.map((publisher) => {
-      const games = resolver.games({ Games })({ publisherId: publisher.id });
-      return { ...publisher, games };
-    })
-  ),
-  publisher: ({ games, Publishers, resolver }) => (
-    games.map((game) => {
-      const publisher = resolver.publishers({ Publishers })({ id: game.publisherId });
-      return { ...game, publisher };
-    })
-  ),
-};
-
-const publishersResolver = ({
-  Publishers, Games, resolver, join, // eslint-disable-line no-shadow
-}) => ({ id }) => {
-  let data = [];
-  if (typeof id === 'undefined') {
-    return join.game({ publishers: Publishers, Games, resolver });
-  }
-  if (id) {
-    const result = Publishers.find(publisher => publisher.id === id);
-    data = typeof result === 'object' ? [...data, result] : data;
-  }
-
-  if (resolver && Games && join) {
-    return join.game({ publishers: data, Games, resolver });
-  }
-
-  return data;
-};
-
-const gamesResolver = ({
-  Games, Publishers, resolver, join, // eslint-disable-line no-shadow
-}) => ({ id, publisherId }) => {
-  let data = [];
-  if (typeof id === 'undefined' && typeof publisherId === 'undefined') {
-    return join.publisher({ games: Games, Publishers, resolver });
-  }
-  if (id) {
-    const result = Games.find(game => game.id === id);
-    data = typeof result === 'object' ? [...data, result] : data;
-  }
-  if (publisherId) {
-    data = Games.filter(game => game.publisherId === publisherId);
-  }
-
-  if (Publishers && publishersResolver && join) {
-    return join.publisher({ games: data, Publishers, resolver });
-  }
-
-  return data;
+const Query = {
+  hi: () => 'hi',
+  games: (_, { id, publisherId }, { store: { games } }) => {
+    // console.log("games query", { id, games });
+    let filteredGames = games;
+    if (id) {
+      filteredGames = filteredGames.filter((g) => g.id === id);
+    }
+    if (publisherId) {
+      filteredGames = filteredGames.filter((g) => g.publisherId === publisherId);
+    }
+    return filteredGames;
+  },
+  publishers: (_, { id }, { store: { publishers } }) => (id ? publishers.filter((p) => p.id === id) : publishers),
 };
 
 const resolver = {
-  games: gamesResolver,
-  publishers: publishersResolver,
+  Query,
+  GamesTrace: {
+    publisher: (game, _, { loaders: { publishersLoader } }) => publishersLoader.load(game.publisherId),
+  },
+  PublishersTrace: {
+    games: (publisher, _, { loaders: { gamesLoader } }) => gamesLoader.load(publisher.id),
+  },
+  Mutation: {
+    addPublisher: (_, args, { store: { publishers } }) => mutation.publisher.add(publishers)(args),
+    editPublisher: (_, args, { store: { publishers }, loaders: { publishersLoader } }) => mutation.publisher.edit({ publishers, publishersLoader })(args),
+    addGame: (_, args, { store: { publishers, games } }) => mutation.game.add({ publishers, games })(args),
+    editGame: (_, args, { store: { games } }) => mutation.game.edit(games)(args),
+  },
 };
 
 module.exports = {
   resolver,
-  join,
 };
