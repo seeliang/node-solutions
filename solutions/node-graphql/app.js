@@ -18,20 +18,10 @@ const resolvers = {
   Mutation
 };
 
-
-
 const createLoaders = (store) => {
   return {
     publishersLoader: new DataLoader(async (gameIds) => {
-      let cachePublishers = {
-      }; // simple in-memory cache for DataLoader
-      if (gameIds.every((id) => cachePublishers[id])) {
-        console.log("has all game,  cache:", cachePublishers, "gameIds:", gameIds);
-        return gameIds.map((id) => cachePublishers[id]);
-      }
-      // console.log("cache:", cachePublishers, "gameIds:", gameIds);
       const publishers = await store.publishers.filter((p) => gameIds.includes(p.id));
-      gameIds.forEach((id) => { console.log(id, publishers); cachePublishers[id] = publishers.find((p) => p.id === id) || null; });
       return gameIds.map((id) => publishers.find((p) => p.id === id) || null);
     }),
     gamesLoader: new DataLoader(async (publisherIds) => {
@@ -51,12 +41,11 @@ const createApp = (store = createStore()) => {
     res.type('html').send(ruruHTML({ endpoint: '/graphql' }));
   });
 
-  const loaders = createLoaders(store);
   app.all('/graphql', createHandler({
-    schema, context: {
+    schema, context: () => ({
       store,
-      loaders
-    }
+      loaders: createLoaders(store)
+    })
   }));
   return app;
 };

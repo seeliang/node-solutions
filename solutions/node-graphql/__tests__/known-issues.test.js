@@ -119,7 +119,7 @@ describe('open bugs', () => {
   // 8. Loaders are created once per app, so their cache outlives the
   //    request: after a rename, later requests still get the cached title.
   //    Create loaders per request with the function form of `context`.
-  test.skip('8. a later request sees a renamed publisher', async () => {
+  test('8. a later request sees a renamed publisher', async () => {
     const app = createApp();
     await gql(app, QUERIES.publisherOfGame); // caches publisher 1
 
